@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:positeams_programmierung2/components/post.dart';
+import 'package:positeams_programmierung2/components/navigationbar.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -6,7 +8,6 @@ class Homepage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Start app bar
       appBar: AppBar(
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.start, // Align children at the start of the cross axis (left)
@@ -40,15 +41,13 @@ class Homepage extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.swap_vert, size: 35), // Sort icon
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
               icon: Icon(Icons.filter_list, size: 35), // Filter icon
-              onPressed: () {
-              },
+              onPressed: () {},
             ),
           ),
         ],
@@ -60,7 +59,13 @@ class Homepage extends StatelessWidget {
           ),
         ),
       ),
+      body: Column(
+        children: [
+          SizedBox(height: 3),
+          Post(),
+        ],
+      ),
+      bottomNavigationBar: MyNavigationBar(), // integration of navigationbar
     );
   }
 }
-
