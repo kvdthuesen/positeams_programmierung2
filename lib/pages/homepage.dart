@@ -59,9 +59,10 @@ class Homepage extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
+      body: ListView( // scrollen
         children: [
-          SizedBox(height: 3),
+          SizedBox(height: 8),
+          Post(),
           Post(),
           Post(),
         ],

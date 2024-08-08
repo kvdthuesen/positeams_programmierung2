@@ -6,11 +6,11 @@ class Post extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // padding after one post - distance between posts
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row( // Profile row with avatar and user details
+          Row( // profile row with avatar and user details
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
@@ -64,7 +64,7 @@ class Post extends StatelessWidget {
             borderRadius: BorderRadius.circular(5.0),
             child: Image.asset('lib/images/hermes.jpg'),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 5),
           // Interaction buttons row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -77,6 +77,7 @@ class Post extends StatelessWidget {
                     icon: Icon(Icons.thumb_up_alt_outlined),
                     onPressed: () {},
                   ),
+                  SizedBox(height: 2), // Added this line
                   Text(
                     'Gefällt mir!',
                     style: TextStyle(
@@ -94,6 +95,7 @@ class Post extends StatelessWidget {
                     icon: Icon(Icons.favorite_border),
                     onPressed: () {},
                   ),
+                  SizedBox(height: 2), // Added this line
                   Text(
                     'Liebe',
                     style: TextStyle(
@@ -111,6 +113,7 @@ class Post extends StatelessWidget {
                     icon: Icon(Icons.emoji_emotions_outlined),
                     onPressed: () {},
                   ),
+                  SizedBox(height: 2), // Added this line
                   Text(
                     'Applaus',
                     style: TextStyle(
@@ -130,6 +133,8 @@ class Post extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
                       ),
+                      minimumSize: Size(80, 30), // minimum size of box
+                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Adjust padding
                     ),
                     child: Text(
                       "Let's chat!",
@@ -141,7 +146,7 @@ class Post extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 2), // Added this line
                   Text(
                     'Talk in Teams',
                     style: TextStyle(
@@ -156,11 +161,11 @@ class Post extends StatelessWidget {
           ),
           SizedBox(height: 16), // Space between row and border
           // Bottom border
-          Container(
+          Container( //divider
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.grey,
+                  color: Color.fromARGB(255, 229, 229, 229),
                   width: 0.5, // Thin border
                 ),
               ),
