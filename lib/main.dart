@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/pages/homepage.dart';
+import 'package:positeams_programmierung2/pages/home_page.dart';
+//import 'package:positeams_programmierung2/pages/addPost_page.dart';
+
+
 
 void main() {
   runApp(const MyApp());

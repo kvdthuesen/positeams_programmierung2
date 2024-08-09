@@ -65,6 +65,7 @@ class Homepage extends StatelessWidget {
           Post(),
           Post(),
           Post(),
+          Post(),
         ],
       ),
       bottomNavigationBar: MyNavigationBar(), // integration of navigationbar

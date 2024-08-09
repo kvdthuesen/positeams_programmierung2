@@ -60,24 +60,31 @@ class Post extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16),
-          ClipRRect( // post image
-            borderRadius: BorderRadius.circular(5.0),
-            child: Image.asset('lib/images/hermes.jpg'),
+          Row( // New Row to align the image
+            mainAxisAlignment: MainAxisAlignment.end, // Align image to the right
+            children: [
+              ClipRRect( // post image
+                borderRadius: BorderRadius.circular(5.0),
+                child: Image.asset(
+                  'lib/images/hermes.jpg',
+                  width: 335, // adjust the width if needed
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 5),
           // Interaction buttons row
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.end, // Align buttons to the right
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Like button
               Column(
                 children: [
                   IconButton(
                     icon: Icon(Icons.thumb_up_alt_outlined),
                     onPressed: () {},
                   ),
-                  SizedBox(height: 2), // Added this line
+                  SizedBox(height: 2,), // Added this line
                   Text(
                     'Gefällt mir!',
                     style: TextStyle(
@@ -88,14 +95,14 @@ class Post extends StatelessWidget {
                   ),
                 ],
               ),
-              // Love button
+              SizedBox(width:20), // Spacing between buttons
               Column(
                 children: [
                   IconButton(
                     icon: Icon(Icons.favorite_border),
                     onPressed: () {},
                   ),
-                  SizedBox(height: 2), // Added this line
+                  SizedBox(height: 2, width: 60,), // Added this line
                   Text(
                     'Liebe',
                     style: TextStyle(
@@ -106,7 +113,7 @@ class Post extends StatelessWidget {
                   ),
                 ],
               ),
-              // Applause button
+              SizedBox(width: 30), // Spacing between buttons
               Column(
                 children: [
                   IconButton(
@@ -124,6 +131,7 @@ class Post extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(width: 40), // Spacing between buttons
               Column( // "Let's chat!" button with "Talk in Teams" text
                 children: [
                   ElevatedButton(
@@ -159,6 +167,7 @@ class Post extends StatelessWidget {
               ),
             ],
           ),
+          // divider
           SizedBox(height: 16), // Space between row and border
           // Bottom border
           Container( //divider
