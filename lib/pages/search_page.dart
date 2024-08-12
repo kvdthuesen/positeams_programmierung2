@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/pages/explore_page.dart';
+import 'package:positeams_programmierung2/components/appbar.dart';
 
 class Search extends StatelessWidget {
   const Search({super.key});
@@ -7,37 +8,10 @@ class Search extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Removes the standard back button
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Posi',
-                    style: TextStyle(
-                      fontFamily: 'Futura Condensed',
-                      fontSize: 32,
-                      fontWeight: FontWeight.w500,
-                      color: Color.fromARGB(255, 7, 110, 23),
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'Teams',
-                    style: TextStyle(
-                      fontFamily: 'futura Condensed',
-                      fontSize: 32,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      appBar: MyAppBar(
+        title: 'PosiTeams',
+        titleAlign: TextAlign.left,
+        automaticallyImplyLeading: false, // Entfernt den standardmäßigen Zurück-Button
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -60,15 +34,8 @@ class Search extends StatelessWidget {
             ),
           ),
         ],
-        bottom: PreferredSize( //divider
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: const Color.fromARGB(255, 229, 229, 229),
-            height: 1.0,
-          ),
-        ),
+        showBottomBorder: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -77,18 +44,18 @@ class Search extends StatelessWidget {
             Container(
               height: 40,
               decoration: BoxDecoration(
-                color: Color.fromARGB(100, 220, 220, 220),
+                color: const Color.fromARGB(100, 220, 220, 220),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: Colors.black,
                 ),
               ),
               child: TextField(
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Futura',
                   fontSize: 16,
                 ),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.search, color: Colors.black),
                   hintText: 'Finde Kolleg*innen, Teams, Stichworte...',
                   hintStyle: TextStyle(
@@ -134,7 +101,7 @@ class Search extends StatelessWidget {
       height: 40,
       margin: const EdgeInsets.symmetric(vertical: 1.0), // Reduced vertical margin
       decoration: BoxDecoration(
-        color: Color.fromARGB(100, 220, 220, 220),
+        color: const Color.fromARGB(100, 220, 220, 220),
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.center,
@@ -145,14 +112,14 @@ class Search extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16.0),
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Futura',
                 color: Colors.grey,
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+          const Padding(
+            padding: EdgeInsets.only(right: 16.0),
             child: Icon(
               Icons.close,
               color: Colors.grey,
