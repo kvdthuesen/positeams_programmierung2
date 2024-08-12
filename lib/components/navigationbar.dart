@@ -1,31 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/pages/addPost_page.dart';
+import 'package:positeams_programmierung2/pages/explore_page.dart';
+import 'package:positeams_programmierung2/pages/home_page.dart';
 
 class MyNavigationBar extends StatelessWidget {
-  const MyNavigationBar({super.key});
+  final int currentIndex;
+
+  const MyNavigationBar({super.key, required this.currentIndex});
 
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
-      /*case 0:
-      // Navigate to Home Page
-        Navigator.push(
+      case 0:
+      // Navigiere zur Home Page
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => Homepage()),
-        );
-        break;*/
-      //case 1:
-      // Navigate to Search Page (if you have one)
-        //break;
-      case 2:
-      // Navigate to Add Post Page
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AddPost()),
+          MaterialPageRoute(builder: (context) => const Homepage()),
+              (Route<dynamic> route) => false,
         );
         break;
-      /*case 3:
-      // Navigate to Profile Page (if you have one)
-        break;*/
+      case 1:
+      // Navigiere zur Explore Page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const Explore()),
+              (Route<dynamic> route) => false,
+        );
+        break;
+      case 2:
+      // Navigiere zur Add Post Page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const AddPost()),
+              (Route<dynamic> route) => false,
+        );
+        break;
     }
   }
 
@@ -41,6 +49,7 @@ class MyNavigationBar extends StatelessWidget {
         ),
       ),
       child: BottomNavigationBar(
+        currentIndex: currentIndex, // Der aktuelle Index wird gesetzt
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
         onTap: (index) => _onItemTapped(context, index),

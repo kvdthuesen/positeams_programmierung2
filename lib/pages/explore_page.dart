@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:positeams_programmierung2/pages/search_page.dart';
 import 'package:positeams_programmierung2/components/post.dart';
 import 'package:positeams_programmierung2/components/navigationbar.dart';
 
-class Homepage extends StatelessWidget {
-  const Homepage({super.key});
+class Explore extends StatelessWidget {
+  const Explore({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // delete back-narrow
         title: Row(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align children at the start of the cross axis (left)
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             RichText(
               text: TextSpan(
@@ -21,7 +23,7 @@ class Homepage extends StatelessWidget {
                       fontFamily: 'futura Condensed',
                       fontSize: 32,
                       fontWeight: FontWeight.w500,
-                      color: Color.fromARGB(255, 7, 110, 23), // Green color for "Posi"
+                      color: Color.fromARGB(255, 7, 110, 23),
                     ),
                   ),
                   TextSpan(
@@ -30,7 +32,7 @@ class Homepage extends StatelessWidget {
                       fontFamily: 'futura Condensed',
                       fontSize: 32,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black, // Black color for "Teams"
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -39,15 +41,19 @@ class Homepage extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.swap_vert, size: 35), // Sort icon
-            onPressed: () {},
-          ),
           Padding(
-            padding: const EdgeInsets.only(right: 12.0),
+            padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              icon: Icon(Icons.filter_list, size: 35), // Filter icon
-              onPressed: () {},
+              icon: Icon(
+                  Icons.search,
+                  size: 32),
+              onPressed: () {
+                // navigation to search class
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Search()),
+                );
+              },
             ),
           ),
         ],
@@ -55,7 +61,7 @@ class Homepage extends StatelessWidget {
           preferredSize: Size.fromHeight(1.0), // Height of the bottom border
           child: Container(
             color: Color.fromARGB(255, 229, 229, 229), // Color of the bottom border
-            height: 1.0, // Thickness of the bottom border
+            height: 1.0,
           ),
         ),
       ),
@@ -68,7 +74,7 @@ class Homepage extends StatelessWidget {
           Post(),
         ],
       ),
-      bottomNavigationBar: const MyNavigationBar(currentIndex: 0), // integration of navigationbar
+      bottomNavigationBar: const MyNavigationBar(currentIndex: 1), // integration of navigationbar
     );
   }
 }

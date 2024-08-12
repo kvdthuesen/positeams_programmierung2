@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:positeams_programmierung2/pages/home_page.dart';
 
 class AddPost extends StatelessWidget {
   const AddPost({super.key});
@@ -6,6 +7,7 @@ class AddPost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //appBar
       appBar: AppBar(
         centerTitle: true,
         title: RichText(
@@ -35,10 +37,13 @@ class AddPost extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.close, size: 30),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement( // push-replacement to turn back to Homepage
+              context,
+              MaterialPageRoute(builder: (context) => const Homepage()),
+            );
           },
         ),
-        actions: [
+        actions: [ // posten Button
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: SizedBox(
@@ -68,7 +73,7 @@ class AddPost extends StatelessWidget {
             ),
           ),
         ],
-        bottom: PreferredSize(
+        bottom: PreferredSize( // divider
           preferredSize: Size.fromHeight(1.0),
           child: Container(
             color: Color.fromARGB(255, 229, 229, 229),
@@ -76,10 +81,12 @@ class AddPost extends StatelessWidget {
           ),
         ),
       ),
+
+      // body
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start, //start with "Teilen mit"
           children: [
             Row(
               children: [
@@ -94,7 +101,7 @@ class AddPost extends StatelessWidget {
                 SizedBox(
                   width: 300,
                   height: 30,
-                  child: DropdownButtonFormField<String>(
+                  child: DropdownButtonFormField<String>( //Dropdown
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
@@ -150,7 +157,7 @@ class AddPost extends StatelessWidget {
                     maxLines: 5,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Color.fromARGB(255, 229, 229, 229), // Deckende Hintergrundfarbe
+                      fillColor: Color.fromARGB(255, 229, 229, 229),
                       hintText: 'Schreibe hier deine News, Erfolge oder andere positiven Erlebnisse hin',
                       hintStyle: TextStyle(
                         fontFamily: 'Futura',
@@ -239,13 +246,13 @@ class AddPost extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // Aktion für das Hinzufügen eines Bildes
+
                   },
                   child: Container(
                     width: 350,
                     height: 150,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(26, 0, 0, 0), // Grau als Hintergrundfarbe für die Box
+                      color: Color.fromARGB(26, 0, 0, 0),
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(5),
                     ),
