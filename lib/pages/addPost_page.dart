@@ -9,8 +9,8 @@ class AddPost extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        title: 'PosiNews', // Angepasster Titel der AppBar
-        titleAlign: TextAlign.center, // Titel zentriert
+        title: 'PosiNews', // new titel for appbar
+        titleAlign: TextAlign.center,
         leading: IconButton(
           icon: const Icon(Icons.close, size: 30),
           onPressed: () {
@@ -50,13 +50,13 @@ class AddPost extends StatelessWidget {
             ),
           ),
         ],
-        showBottomBorder: true, // Untere Grenze anzeigen
+        showBottomBorder: true, // divider
       ),
 
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Start mit "Teilen mit"
+          crossAxisAlignment: CrossAxisAlignment.start, // start with "teilen mit"
           children: [
             Row(
               children: [
@@ -216,7 +216,7 @@ class AddPost extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // Hier könnte ein Bild hinzugefügt werden
+                    //
                   },
                   child: Container(
                     width: 350,
