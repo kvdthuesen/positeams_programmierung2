@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/pages/addPost_page.dart';
 import 'package:positeams_programmierung2/pages/explore_page.dart';
 import 'package:positeams_programmierung2/pages/home_page.dart';
-import 'package:positeams_programmierung2/pages/myProfile_page.dart';
+import 'package:positeams_programmierung2/pages/Profile_page.dart';
 
 class MyNavigationBar extends StatelessWidget {
   final int currentIndex;
