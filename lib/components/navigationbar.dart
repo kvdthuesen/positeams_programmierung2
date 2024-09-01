@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/pages/addPost_page.dart';
 import 'package:positeams_programmierung2/pages/explore_page.dart';
 import 'package:positeams_programmierung2/pages/home_page.dart';
+import 'package:positeams_programmierung2/pages/myProfile_page.dart';
 
 class MyNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -11,7 +12,7 @@ class MyNavigationBar extends StatelessWidget {
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
-      // Navigiere zur Home Page
+      // Navigation to Homepage
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const Homepage()),
@@ -19,7 +20,7 @@ class MyNavigationBar extends StatelessWidget {
         );
         break;
       case 1:
-      // Navigiere zur Explore Page
+      // Navigation to Explore Page
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const Explore()),
@@ -27,13 +28,20 @@ class MyNavigationBar extends StatelessWidget {
         );
         break;
       case 2:
-      // Navigiere zur Add Post Page
+      // Navigation to Add Post Page
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const AddPost()),
               (Route<dynamic> route) => false,
         );
         break;
+      case 3:
+      // Navigation to Profile Page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MyProfile()),
+              (Route<dynamic> route) => false,
+        );
     }
   }
 

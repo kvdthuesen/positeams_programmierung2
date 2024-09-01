@@ -16,6 +16,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBottomBorder = true,  // optional: Shows a bottom border if true (default)
     this.automaticallyImplyLeading = true,  // optional: Automatically shows a back button if true (default)
     this.leading, // adjusts the automaticallyImplyLeading - insert any widgets
+
   });
 
   @override
@@ -69,3 +70,4 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(56.0);
 }
+
