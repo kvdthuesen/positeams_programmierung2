@@ -1,29 +1,33 @@
 import 'package:flutter/material.dart';
 
+// main class for post
 class Post extends StatelessWidget {
   const Post({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // padding after one post - distance between posts
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,  // alignment of context - left
         children: [
-          Row( // profile row with avatar and user details
+          // row with avatar and text
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage('lib/images/avatar.jpg'), //profile picture
-                radius: 30,
+                backgroundImage: AssetImage('lib/images/avatar.jpg'),  // avatar picture of individual user
+                radius: 28,
               ),
-              SizedBox(width: 10),
-              // User details
+              SizedBox(width: 10),  // distance between avatar and text
+
+              // column for user name and team
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(  // user name and role
+                    // styling
+                    RichText(
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -45,7 +49,9 @@ class Post extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 4), // Post text
+                    SizedBox(height: 4),  // distance to post text
+
+                    // post text
                     Text(
                       'Hier kommt der Beitragstext hin! Erfolge, Meilensteine, Positive News werden geteilt',
                       style: TextStyle(
@@ -54,134 +60,149 @@ class Post extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
+                    SizedBox(height: 16),  // distance to image
+
+                    // Image preview with click function for full screen view
+                    GestureDetector(
+                      onTap: () {
+                        // show image in full screen view - function
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Dialog(
+                              backgroundColor: Colors.transparent,
+                              insetPadding: EdgeInsets.all(10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop();  // closing diaglog with second click
+                                },
+                                child: Center(
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height,
+                                    child: Image.asset(
+                                      'lib/images/test.jpg',  // image of assets -> soon function für datenbank
+                                      fit: BoxFit.contain,  // scales image
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: AspectRatio(
+                        aspectRatio: 21 / 9,  // Aspect ratio of image preview - !!! eventuell noch anpassen
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5.0),
+                          child: Image.asset(
+                            'lib/images/test.jpg',  // image in preview
+                            fit: BoxFit.cover,  // scales image
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 5),  // distance below image
+
+                    // row with interaction buttons (Gefällt mir, Liebe, Applaus, Chat)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Verteilung der Buttons
+                      children: [
+                        InteractionButton(icon: Icons.thumb_up_alt_outlined, label: 'Gefällt mir!'),
+                        InteractionButton(icon: Icons.favorite_border, label: 'Liebe'),
+                        InteractionButton(icon: Icons.emoji_emotions_outlined, label: 'Applaus'),
+                        ChatButton(),  // special button fpr chat Button - eventuell API zu Teams
+                      ],
+                    ),
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16),
-          Row( // New Row to align the image
-            mainAxisAlignment: MainAxisAlignment.end, // Align image to the right
-            children: [
-              ClipRRect( // post image
-                borderRadius: BorderRadius.circular(5.0),
-                child: Image.asset(
-                  'lib/images/hermes.jpg',
-                  width: 335, // adjust the width if needed
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 5),
-          // Interaction buttons row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end, // Align buttons to the right
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Column(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.thumb_up_alt_outlined),
-                    onPressed: () {},
-                  ),
-                  SizedBox(height: 2,), // Added this line
-                  Text(
-                    'Gefällt mir!',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontFamily: 'futura Condensed',
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width:20), // Spacing between buttons
-              Column(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.favorite_border),
-                    onPressed: () {},
-                  ),
-                  SizedBox(height: 2, width: 60,), // Added this line
-                  Text(
-                    'Liebe',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontFamily: 'futura Condensed',
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 30), // Spacing between buttons
-              Column(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.emoji_emotions_outlined),
-                    onPressed: () {},
-                  ),
-                  SizedBox(height: 2), // Added this line
-                  Text(
-                    'Applaus',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontFamily: 'futura Condensed',
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 40), // Spacing between buttons
-              Column( // "Let's chat!" button with "Talk in Teams" text
-                children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 7, 110, 23),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      minimumSize: Size(80, 30), // minimum size of box
-                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Adjust padding
-                    ),
-                    child: Text(
-                      "Let's chat!",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'futura',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 2), // Added this line
-                  Text(
-                    'Talk in Teams',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontFamily: 'futura Condensed',
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          // divider
-          SizedBox(height: 16), // Space between row and border
-          // Bottom border
-          Container( //divider
+          SizedBox(height: 16),  // distance to divider
+
+          // divider styling
+          Container(
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
                   color: Color.fromARGB(255, 229, 229, 229),
-                  width: 0.5, // Thin border
+                  width: 0.5,
                 ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+// defintion of interaction button (z.B. "Gefällt mir", "Liebe", "Applaus")
+class InteractionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const InteractionButton({required this.icon, required this.label, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        IconButton(
+          icon: Icon(icon),  // icon of button
+          onPressed: () {},  // FUNKTIONALITÄT FOLGT!
+        ),
+        SizedBox(height: 2),  // distance below button
+        Text(
+          label,  // description below button
+          style: const TextStyle(
+            color: Colors.grey,
+            fontFamily: 'Futura Condensed',
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Definition of Chat-Button
+class ChatButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ElevatedButton(
+          onPressed: () {},  // FUNKTIONALITÄT FOLGT
+          style: ElevatedButton.styleFrom( //styling of ChatButton
+            backgroundColor: Color.fromARGB(255, 7, 110, 23),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),  // Button-distance innen
+            minimumSize: Size(80, 25),
+          ),
+          child: const Text( // text of button and styling
+            "Let's chat!",
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Futura',
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ),
+        SizedBox(height: 2),  // distance below button
+        Text(
+          'Talk in Teams',  // Text unter dem Button, Hinweis auf Teams-Chat --> FUNKTIONALITÄT FOLGt
+          style: TextStyle(
+            color: Colors.grey,
+            fontFamily: 'Futura Condensed',
+            fontSize: 14,
+          ),
+        ),
+      ],
     );
   }
 }

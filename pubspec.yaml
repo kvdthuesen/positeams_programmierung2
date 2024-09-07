@@ -63,6 +63,7 @@ flutter:
   assets:
     - lib/images/hermes.jpg
     - lib/images/avatar.jpg
+    - lib/images/test.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
