@@ -13,6 +13,8 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
+  final TextEditingController _searchController = TextEditingController();
+
   /// Ensures that the widget's state (such as the search field input) is preserved when switching tabs.
   @override
   bool get wantKeepAlive => true;
@@ -57,32 +59,23 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search input field with a rounded border and search icon
-            Container(
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(100, 220, 220, 220),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.black,
+            // Search input field
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: "Suche Kolleg*innen, Teams, Stichworte ...",
+                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // label in green
+                fillColor: Colors.white,
+                filled: true,
+                border: const OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // frame in green in focus
                 ),
+                prefixIcon: const Icon(Icons.search, color: Colors.black), // Search-Icon
               ),
-              child: TextField(
-                style: const TextStyle(
-                  fontFamily: 'Futura',
-                  fontSize: 16,
-                ),
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search, color: Colors.black),
-                  hintText: 'Finde Kolleg*innen, Teams, Stichworte...',
-                  hintStyle: TextStyle(
-                    fontFamily: 'Futura',
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
-                ),
+              style: const TextStyle(
+                fontFamily: 'Futura',
+                fontSize: 16,
               ),
             ),
             const SizedBox(height: 16),
@@ -122,7 +115,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
       margin: const EdgeInsets.symmetric(vertical: 1.0), // Reduced vertical margin for compact spacing
       decoration: BoxDecoration(
         color: const Color.fromARGB(100, 220, 220, 220),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
       ),
       alignment: Alignment.center,
       child: Row(

@@ -28,6 +28,7 @@ class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
       appBar: MyAppBar(
         title: 'PosiTeams',
         titleAlign: TextAlign.left,
+        automaticallyImplyLeading: false, // remove the back button (arrow)
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
