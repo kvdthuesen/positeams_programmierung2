@@ -2,18 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/pages/home_page.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 
-class AddPost extends StatelessWidget {
+/// AddPost page where users can create and preview new posts.
+/// This page retains its state during tab switching using StatefulWidget.
+class AddPost extends StatefulWidget {
   const AddPost({super.key});
 
   @override
+  _AddPostState createState() => _AddPostState();
+}
+
+class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
+
+  /// Ensures that the state of this page (e.g., form input, dropdown selection) is preserved.
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context); // Ensures the AutomaticKeepAliveClientMixin works.
+
     return Scaffold(
+      // Custom AppBar with centered title and close action
       appBar: MyAppBar(
-        title: 'PosiNews', // new titel for appbar
+        title: 'PosiNews', // Custom title for the post creation screen
         titleAlign: TextAlign.center,
         leading: IconButton(
           icon: const Icon(Icons.close, size: 30),
           onPressed: () {
+            // Navigate back to the homepage
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const Homepage()),
@@ -27,6 +43,7 @@ class AddPost extends StatelessWidget {
               height: 32,
               child: ElevatedButton(
                 onPressed: () {
+                  // Placeholder for the post submission action
                   print("Posten");
                 },
                 style: ElevatedButton.styleFrom(
@@ -50,14 +67,16 @@ class AddPost extends StatelessWidget {
             ),
           ),
         ],
-        showBottomBorder: true, // divider
+        showBottomBorder: true, // Adds a bottom border (divider)
       ),
 
+      // Body with form input fields and a preview section
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // start with "teilen mit"
+          crossAxisAlignment: CrossAxisAlignment.start, // Aligns the text to the start
           children: [
+            // Dropdown for selecting who to share the post with
             Row(
               children: [
                 const Text(
@@ -71,7 +90,7 @@ class AddPost extends StatelessWidget {
                 SizedBox(
                   width: 300,
                   height: 30,
-                  child: DropdownButtonFormField<String>( // Dropdown
+                  child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
@@ -82,8 +101,11 @@ class AddPost extends StatelessWidget {
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     ),
-                    dropdownColor: Colors.white, // Set the background color of the dropdown to white
-                    items: <String>['Mein PosiTeam', 'Meine PosiFirma', 'Ausgewählte PosiKollegen'].map((String value) {
+                    items: <String>[
+                      'Mein PosiTeam',
+                      'Meine PosiFirma',
+                      'Ausgewählte PosiKollegen'
+                    ].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
@@ -97,7 +119,9 @@ class AddPost extends StatelessWidget {
                         ),
                       );
                     }).toList(),
-                    onChanged: (String? newValue) {},
+                    onChanged: (String? newValue) {
+                      // Handle dropdown selection change
+                    },
                     hint: const Text(
                       'Bitte auswählen (Dropdown)',
                       style: TextStyle(
@@ -112,6 +136,8 @@ class AddPost extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
+
+            // Input field for writing the post
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -149,17 +175,11 @@ class AddPost extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 20),
-            Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.grey,
-                    width: 0.5,
-                  ),
-                ),
-              ),
-            ),
+            const Divider(), // Adds a horizontal divider
+
+            // Preview section showing how the post will appear
             const SizedBox(height: 12),
             const Text(
               'Vorschau',
@@ -174,7 +194,7 @@ class AddPost extends StatelessWidget {
               children: [
                 const CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage('lib/images/avatar.jpg'),
+                  backgroundImage: AssetImage('lib/images/avatar.jpg'), // Example avatar
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -211,13 +231,15 @@ class AddPost extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 25),
+            // Section to add an image to the post
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GestureDetector(
                   onTap: () {
-                    //
+                    // Placeholder for adding image
                   },
                   child: Container(
                     width: 350,
