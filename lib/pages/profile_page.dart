@@ -17,7 +17,7 @@ class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // entire background white !!!
+      backgroundColor: Colors.white, // entire background to white
       appBar: MyAppBar(
         title: 'PosiTeams',
         titleAlign: TextAlign.start,
@@ -38,7 +38,7 @@ class _MyProfileState extends State<MyProfile> {
           // Sliver for profile header, image, and avatar
           SliverToBoxAdapter(
             child: Stack(
-              clipBehavior: Clip.none, // allows the avatar to overflow the stack - bc white background
+              clipBehavior: Clip.none, // allows the avatar to overflow the stack
               children: [
                 // Header image
                 Container(
@@ -68,7 +68,7 @@ class _MyProfileState extends State<MyProfile> {
             ),
           ),
           SliverToBoxAdapter(
-            child: const SizedBox(height: 40),
+            child: const SizedBox(height: 40), // Space to accommodate the floating avatar - bc backgroundcolor white
           ),
           // Sliver for the name and description
           SliverToBoxAdapter(
@@ -112,33 +112,39 @@ class _MyProfileState extends State<MyProfile> {
               ),
             ),
           ),
-          // Regular SliverToBoxAdapter for buttons (not pinned)
-          SliverToBoxAdapter(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  _buildProfileButton(
-                    text: 'Beiträge',
-                    isSelected: _selectedButton == 'Beiträge',
-                    onPressed: () {
-                      setState(() {
-                        _selectedButton = 'Beiträge';
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 10), // gap between the buttons
-                  _buildProfileButton(
-                    text: 'Reaktionen',
-                    isSelected: _selectedButton == 'Reaktionen',
-                    onPressed: () {
-                      setState(() {
-                        _selectedButton = 'Reaktionen';
-                      });
-                    },
-                  ),
-                ],
+          // SliverAppBar for the buttons that will be pinned (fixiert)
+          SliverPersistentHeader(
+            pinned: true,
+            floating: false,
+            delegate: _SliverAppBarDelegate(
+              minHeight: 50.0,
+              maxHeight: 50.0,
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    _buildProfileButton(
+                      text: 'Beiträge',
+                      isSelected: _selectedButton == 'Beiträge',
+                      onPressed: () {
+                        setState(() {
+                          _selectedButton = 'Beiträge';
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 10), // gap between the buttons
+                    _buildProfileButton(
+                      text: 'Reaktionen',
+                      isSelected: _selectedButton == 'Reaktionen',
+                      onPressed: () {
+                        setState(() {
+                          _selectedButton = 'Reaktionen';
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -189,4 +195,44 @@ class _MyProfileState extends State<MyProfile> {
     );
   }
 }
+
+// Custom SliverAppBarDelegate to handle pinned and floating behavior
+// fix 'Beiträge' and 'Reaktionen' buttons when scrolling
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight; // Minimum height of the SliverAppBar (when fully collapsed)
+  final double maxHeight; // Maximum height of the SliverAppBar (when fully expanded)
+  final Widget child; // The widget (UI component) to be displayed in the SliverAppBar
+
+  // Constructor to initialize the minHeight, maxHeight, and the child widget
+  _SliverAppBarDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  // Returns the minimum extent (height) of the Sliver when it's collapsed
+  @override
+  double get minExtent => minHeight;
+
+  // Returns the maximum extent (height) of the Sliver when it's fully expanded
+  @override
+  double get maxExtent => maxHeight;
+
+  // Builds the content of the Sliver, using the provided 'child' widget.
+  // SizedBox.expand ensures that the child widget takes up all available space.
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  // Determines if the SliverAppBarDelegate should rebuild when its properties change
+  // Returns true if the heights or the child widget are different from the previous state
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight || // Rebuild if maxHeight changes
+        minHeight != oldDelegate.minHeight ||  // Rebuild if minHeight changes
+        child != oldDelegate.child; // Rebuild if child widget changes
+  }
+}
+
 
