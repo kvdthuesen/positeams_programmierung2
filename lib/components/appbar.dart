@@ -24,6 +24,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       automaticallyImplyLeading: automaticallyImplyLeading,
       leading: leading, // using the leading parameter
+      backgroundColor: Colors.white,
       title: Row(
         mainAxisAlignment: titleAlign == TextAlign.center ? MainAxisAlignment.center : MainAxisAlignment.start,
         children: [

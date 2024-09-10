@@ -82,6 +82,7 @@ class AddPost extends StatelessWidget {
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     ),
+                    dropdownColor: Colors.white, // Set the background color of the dropdown to white
                     items: <String>['Mein PosiTeam', 'Meine PosiFirma', 'Ausgewählte PosiKollegen'].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,

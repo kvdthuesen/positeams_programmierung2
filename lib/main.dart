@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/pages/authentication_page.dart'; // Importiere die neue Anmeldeseite
-//import 'package:positeams_programmierung2/pages/addPost_page.dart';
-
+import 'package:positeams_programmierung2/pages/authentication_page.dart';
 
 
 void main() {
@@ -14,8 +12,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, //remove debug banner
-      home: AuthPage(), // start with homepage
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // Remove debug banner
+      home: AuthPage(), // Start with homepage
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white, // Set global background color to white
+      ),
     );
   }
 }
