@@ -4,9 +4,7 @@ import 'package:positeams_programmierung2/pages/explore_page.dart'; // Imports p
 import 'package:positeams_programmierung2/pages/home_page.dart'; // Imports homepage
 import 'package:positeams_programmierung2/pages/Profile_page.dart'; // Imports profile page
 
-// Custom navigation bar widget that allows users to navigate between main app pages
 class MyNavigationBar extends StatelessWidget {
-  // The index of the currently selected tab
   final int currentIndex;
 
   // Define colors and icon size for selected and unselected items
@@ -18,7 +16,6 @@ class MyNavigationBar extends StatelessWidget {
   const MyNavigationBar({super.key, required this.currentIndex});
 
   // Handles the navigation logic when an item in the bottom navigation is tapped
-  // It will navigate to the appropriate page and clear the previous navigation stack
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
@@ -53,43 +50,47 @@ class MyNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Builds the themed navigation bar
-    return NavigationBarTheme(
-      data: NavigationBarThemeData(
-        backgroundColor: backgroundColor, // Sets the background color to white
-        indicatorColor: Colors.transparent, // No background highlight on the selected item
-        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
-          // Conditionally set the icon theme based on whether the state is selected
-          if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: selectedColor, size: iconSize); // Black icon for selected tab
-          }
-          return IconThemeData(color: unselectedColor, size: iconSize); // Grey icon for unselected tabs
-        }),
-        labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(fontSize: 0), // Hide labels by setting font size to 0
-        ),
+    return Container(
+      height: 80, // Set the desired height of the NavigationBar here
+      decoration: BoxDecoration(
+        color: backgroundColor, // Set background color for the container
       ),
-      child: NavigationBar(
-        selectedIndex: currentIndex, // The currently active tab index
-        onDestinationSelected: (index) => _onItemTapped(context, index), // Handle tab change
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home), // Icon for Home tab
-            label: '', // No label text
+      child: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          backgroundColor: Colors.transparent, // Set background to transparent for the inner NavigationBar
+          indicatorColor: Colors.transparent, // No background highlight on the selected item
+          iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
+            if (states.contains(WidgetState.selected)) {
+              return IconThemeData(color: selectedColor, size: iconSize); // Black icon for selected tab
+            }
+            return IconThemeData(color: unselectedColor, size: iconSize); // Grey icon for unselected tabs
+          }),
+          labelTextStyle: WidgetStateProperty.all(
+            const TextStyle(fontSize: 0), // Hide labels by setting font size to 0
           ),
-          NavigationDestination(
-            icon: Icon(Icons.search), // Icon for Explore/Search tab
-            label: '', // No label text
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.add), // Icon for Add Post tab
-            label: '', // No label text
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person), // Icon for Profile tab
-            label: '', // No label text
-          ),
-        ],
+        ),
+        child: NavigationBar(
+          selectedIndex: currentIndex, // The currently active tab index
+          onDestinationSelected: (index) => _onItemTapped(context, index), // Handle tab change
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home), // Icon for Home tab
+              label: '', // No label text
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search), // Icon for Explore/Search tab
+              label: '', // No label text
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.add), // Icon for Add Post tab
+              label: '', // No label text
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person), // Icon for Profile tab
+              label: '', // No label text
+            ),
+          ],
+        ),
       ),
     );
   }
