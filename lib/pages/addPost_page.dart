@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/pages/home_page.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 
-/// AddPost page where users can create and preview new posts.
-/// This page retains its state during tab switching using StatefulWidget.
+// The AddPost class is a StatefulWidget - means it can maintain state
 class AddPost extends StatefulWidget {
   const AddPost({super.key});
 
@@ -11,25 +10,45 @@ class AddPost extends StatefulWidget {
   _AddPostState createState() => _AddPostState();
 }
 
+// _AddPostState manages the state for AddPost
 class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
-
-  /// Ensures that the state of this page (e.g., form input, dropdown selection) is preserved.
+  // Ensures the widget state is preserved when navigating between routes
   @override
   bool get wantKeepAlive => true;
 
+  // TextEditingController to manage the text input
+  final TextEditingController _textController = TextEditingController();
+  // ValueNotifier to notify listeners about text changes
+  final ValueNotifier<String> _textNotifier = ValueNotifier<String>('');
+
+  @override
+  void initState() {
+    super.initState();
+    // Listener to update _textNotifier when _textController text changes
+    _textController.addListener(() {
+      _textNotifier.value = _textController.text;
+    });
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _textNotifier.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Ensures the AutomaticKeepAliveClientMixin works.
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
 
     return Scaffold(
-      // Custom AppBar with centered title and close action
       appBar: MyAppBar(
-        title: 'PosiNews', // Custom title for the post creation screen
+        title: 'PosiNews', // Custom app bar title
         titleAlign: TextAlign.center,
         leading: IconButton(
           icon: const Icon(Icons.close, size: 30),
           onPressed: () {
-            // Navigate back to the homepage
+            // Replaces the current route with the homepage route
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const Homepage()),
@@ -40,15 +59,15 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: SizedBox(
-              height: 32,
+              height: 30,
               child: ElevatedButton(
                 onPressed: () {
-                  // Placeholder for the post submission action
+                  // Placeholder for post submission functionality
                   print("Posten");
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(4.0),
                   ),
                   backgroundColor: const Color.fromARGB(255, 7, 110, 23),
                   padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
@@ -67,17 +86,17 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
             ),
           ),
         ],
-        showBottomBorder: true, // Adds a bottom border (divider)
+        showBottomBorder: true, // Divider
       ),
 
-      // Body with form input fields and a preview section
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Aligns the text to the start
+          crossAxisAlignment: CrossAxisAlignment.start, // Aligns children to the start
           children: [
-            // Dropdown for selecting who to share the post with
+            // DropdownButtonFormField for post sharing options
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center, // Center vertically
               children: [
                 const Text(
                   'Teilen mit:',
@@ -86,33 +105,36 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                     fontFamily: 'Futura Condensed',
                   ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 28),
                 SizedBox(
                   width: 300,
-                  height: 30,
+                  height: 40,
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
                         borderSide: const BorderSide(
                           color: Color.fromARGB(255, 7, 110, 23),
-                          width: 2.0,
+                          width: 1.0,
                         ),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     ),
+                    dropdownColor: Colors.white,
+                    isDense: true, // Compact dropdown
                     items: <String>[
                       'Mein PosiTeam',
                       'Meine PosiFirma',
-                      'Ausgewählte PosiKollegen'
+                      'Ausgewählte PosiKolleg*innen'
                     ].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
                           value,
                           style: const TextStyle(
-                            fontFamily: 'futura Condensed',
+                            fontFamily: 'Futura Condensed',
                             fontSize: 20,
+                            height: 1.2, // Adjusts text height
                             fontWeight: FontWeight.w500,
                             color: Colors.black,
                           ),
@@ -120,15 +142,15 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      // Handle dropdown selection change
+                      // Handle selection change
                     },
                     hint: const Text(
-                      'Bitte auswählen (Dropdown)',
+                      'Bitte auswählen',
                       style: TextStyle(
                         color: Color.fromARGB(255, 7, 110, 23),
-                        fontFamily: 'Futura',
-                        fontStyle: FontStyle.italic,
+                        fontFamily: 'Futura Condensed',
                         fontWeight: FontWeight.bold,
+                        fontSize: 20,
                       ),
                     ),
                   ),
@@ -137,7 +159,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
             ),
             const SizedBox(height: 30),
 
-            // Input field for writing the post
+            // TextField for entering post content
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -151,11 +173,13 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                 const SizedBox(width: 20),
                 Expanded(
                   child: TextField(
-                    maxLines: 5,
+                    controller: _textController,
+                    minLines: 1, // Minimum number of lines
+                    maxLines: null, // Expands as needed
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: const Color.fromARGB(255, 229, 229, 229),
-                      hintText: 'Schreibe hier deine News, Erfolge oder andere positiven Erlebnisse hin',
+                      hintText: 'Teile deinen Kolleg*innen deine PosiNews mit!',
                       hintStyle: const TextStyle(
                         fontFamily: 'Futura',
                       ),
@@ -177,10 +201,10 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
             ),
 
             const SizedBox(height: 20),
-            const Divider(), // Adds a horizontal divider
+            const Divider(), // Horizontal divider
 
-            // Preview section showing how the post will appear
-            const SizedBox(height: 12),
+            // Preview section for the post
+            const SizedBox(height: 5),
             const Text(
               'Vorschau',
               style: TextStyle(
@@ -191,79 +215,88 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
             ),
             const SizedBox(height: 8),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const CircleAvatar(
-                  radius: 24,
-                  backgroundImage: AssetImage('lib/images/avatar.jpg'), // Example avatar
+                  radius: 28, // Matches the Post class
+                  backgroundImage: AssetImage('lib/images/avatar.jpg'), // Placeholder avatar image
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: RichText(
-                    text: const TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Maya ',
-                          style: TextStyle(
-                            fontFamily: 'Futura',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Colors.black,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Maya ',
+                              style: TextStyle(
+                                fontFamily: 'Futura',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '- Team Data Science (Business Intelligence)',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontFamily: 'Futura',
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ValueListenableBuilder<String>(
+                        valueListenable: _textNotifier,
+                        builder: (context, text, child) {
+                          return Text(
+                            text.isEmpty
+                                ? 'Hier werden dein News Text angezeigt. Klasse. Toll. Wuhuu. Erfolge. Projekte  '
+                                : text,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                              fontFamily: 'Futura',
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () {
+                          // Placeholder for adding image functionality
+                        },
+                        child: AspectRatio(
+                          aspectRatio: 21 / 9,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(26, 0, 0, 0),
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.add, size: 40, color: Colors.black),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Bild hinzufügen',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                    fontFamily: 'Futura',
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        TextSpan(
-                          text: '- Team Data Science (Business Intelligence)',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
-                        TextSpan(
-                          text: '    Hier werden deine News angezeigt.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 25),
-            // Section to add an image to the post
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    // Placeholder for adding image
-                  },
-                  child: Container(
-                    width: 350,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(26, 0, 0, 0),
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.add, size: 40, color: Colors.black),
-                        SizedBox(height: 8),
-                        Text(
-                          'Bild hinzufügen',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
