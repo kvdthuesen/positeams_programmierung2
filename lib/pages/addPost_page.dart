@@ -1,39 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/pages/home_page.dart';
-import 'package:positeams_programmierung2/components/appbar.dart';
+import 'package:positeams_programmierung2/components/appbar.dart'; // Import custom app bar component
+import 'package:positeams_programmierung2/pages/main_screen.dart'; // Import main screen to navigate back to the correct tab
 
-/// AddPost page where users can create and preview new posts.
-/// This page retains its state during tab switching using StatefulWidget.
 class AddPost extends StatefulWidget {
-  const AddPost({super.key});
+  final int previousIndex; // Stores the index of the previous page (to return after closing)
+
+  // Constructor accepts an optional `previousIndex` parameter (default is 0).
+  // This parameter is used to return to the previously selected tab when navigating back.
+  const AddPost({super.key, this.previousIndex = 0});
 
   @override
   _AddPostState createState() => _AddPostState();
 }
 
 class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
-
-  /// Ensures that the state of this page (e.g., form input, dropdown selection) is preserved.
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Ensures the AutomaticKeepAliveClientMixin works.
+    super.build(context); // Ensures the state is kept alive during navigation.
 
     return Scaffold(
       // Custom AppBar with centered title and close action
       appBar: MyAppBar(
-        title: 'PosiNews', // Custom title for the post creation screen
+        title: 'PosiNews',
         titleAlign: TextAlign.center,
         leading: IconButton(
           icon: const Icon(Icons.close, size: 30),
           onPressed: () {
-            // Navigate back to the homepage
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Homepage()),
-            );
+            // Get access to MainScreenState and switch back to the previous tab
+            MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+
+            // If MainScreenState is available, switch to the previous tab
+            if (mainScreenState != null && widget.previousIndex != mainScreenState.currentIndex) {
+              mainScreenState.onItemTapped(widget.previousIndex); // Switch to the previous tab
+            }
           },
         ),
         actions: [
@@ -42,11 +44,16 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
             child: SizedBox(
               height: 32,
               child: ElevatedButton(
-                onPressed: () {
-                  // Placeholder for the post submission action
-                  print("Posten");
-                },
-                style: ElevatedButton.styleFrom(
+                  onPressed: () {
+                    // Instead of navigating to a new screen, simply switch the tab in MainScreenState
+                    MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+
+                    // Check if MainScreenState exists in the widget tree
+                    if (mainScreenState != null) {
+                      mainScreenState.onItemTapped(3); // Switch to the Profile tab (index 3)
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -67,7 +74,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
             ),
           ),
         ],
-        showBottomBorder: true, // Adds a bottom border (divider)
+        showBottomBorder: true,
       ),
 
       // Body with form input fields and a preview section

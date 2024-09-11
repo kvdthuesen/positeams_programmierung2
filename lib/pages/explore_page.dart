@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/pages/search_page.dart';
 import 'package:positeams_programmierung2/components/post.dart';
-import 'package:positeams_programmierung2/components/navigationbar.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
+import 'package:positeams_programmierung2/pages/main_screen.dart';
 
 /// Explore page displaying a list of posts.
-/// Converted to a StatefulWidget to ensure it retains its state when switching tabs.
 class Explore extends StatefulWidget {
   const Explore({super.key});
 
@@ -15,39 +13,38 @@ class Explore extends StatefulWidget {
 
 class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
 
-  /// Ensures that the widget's state is preserved across tab switches.
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required to maintain the state through AutomaticKeepAliveClientMixin
+    super.build(context);
 
     return Scaffold(
-      // Custom AppBar for the Explore page with search functionality
+      // Custom AppBar with search functionality
       appBar: MyAppBar(
         title: 'PosiTeams',
         titleAlign: TextAlign.left,
-        automaticallyImplyLeading: false, // remove the back button (arrow)
+        automaticallyImplyLeading: false, // remove the back button
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
               icon: const Icon(Icons.search, size: 32),
               onPressed: () {
-                // Navigate to the search page when the search icon is pressed
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Search()),
-                );
+                // Use MainScreen's tab navigation to go to the Search page
+                MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                if (mainScreenState != null) {
+                  mainScreenState.onItemTapped(4); // Correct index for SearchPage
+                }
               },
             ),
           ),
         ],
-        showBottomBorder: true, // Adds a bottom border (divider)
+        showBottomBorder: true,
       ),
 
-      // Main content of the Explore page, displaying a list of posts
+      // Main content of the Explore page
       body: ListView(
         children: const [
           SizedBox(height: 8), // Adds spacing at the top
@@ -57,9 +54,6 @@ class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
           Post(),
         ],
       ),
-
-      // Bottom navigation bar with the current index set to 1 (Explore page active)
-      bottomNavigationBar: const MyNavigationBar(currentIndex: 1),
     );
   }
 }

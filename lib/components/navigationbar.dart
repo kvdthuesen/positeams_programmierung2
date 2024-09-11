@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/pages/addPost_page.dart'; // Imports page for adding a post
-import 'package:positeams_programmierung2/pages/explore_page.dart'; // Imports page for exploring content
-import 'package:positeams_programmierung2/pages/home_page.dart'; // Imports homepage
-import 'package:positeams_programmierung2/pages/Profile_page.dart'; // Imports profile page
 
 class MyNavigationBar extends StatelessWidget {
   final int currentIndex;
+  final ValueChanged<int> onTap;  // Callback for tab changes
 
   // Define colors and icon size for selected and unselected items
   final Color selectedColor = Colors.black; // Color for the selected icon
@@ -13,81 +10,52 @@ class MyNavigationBar extends StatelessWidget {
   final Color backgroundColor = Colors.white; // Background color of the navigation bar
   final double iconSize = 32.0; // Size of the icons
 
-  const MyNavigationBar({super.key, required this.currentIndex});
-
-  // Handles the navigation logic when an item in the bottom navigation is tapped
-  void _onItemTapped(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const Homepage()), // Navigate to Homepage
-              (Route<dynamic> route) => false, // Clear back stack
-        );
-        break;
-      case 1:
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const Explore()), // Navigate to Explore page
-              (Route<dynamic> route) => false, // Clear back stack
-        );
-        break;
-      case 2:
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const AddPost()), // Navigate to AddPost page
-              (Route<dynamic> route) => false, // Clear back stack
-        );
-        break;
-      case 3:
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const MyProfile()), // Navigate to Profile page
-              (Route<dynamic> route) => false, // Clear back stack
-        );
-    }
-  }
+  const MyNavigationBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,  // Require the callback for navigation
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80, // Set the desired height of the NavigationBar here
+      height: 80,  // Set the desired height of the NavigationBar here
       decoration: BoxDecoration(
-        color: backgroundColor, // Set background color for the container
+        color: backgroundColor,  // Set background color for the container
       ),
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
-          backgroundColor: Colors.transparent, // Set background to transparent for the inner NavigationBar
-          indicatorColor: Colors.transparent, // No background highlight on the selected item
+          backgroundColor: Colors.transparent,  // Set background to transparent for the inner NavigationBar
+          indicatorColor: Colors.transparent,  // No background highlight on the selected item
           iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
             if (states.contains(WidgetState.selected)) {
-              return IconThemeData(color: selectedColor, size: iconSize); // Black icon for selected tab
+              return IconThemeData(color: selectedColor, size: iconSize);  // Black icon for selected tab
             }
-            return IconThemeData(color: unselectedColor, size: iconSize); // Grey icon for unselected tabs
+            return IconThemeData(color: unselectedColor, size: iconSize);  // Grey icon for unselected tabs
           }),
           labelTextStyle: WidgetStateProperty.all(
-            const TextStyle(fontSize: 0), // Hide labels by setting font size to 0
+            const TextStyle(fontSize: 0),  // Hide labels by setting font size to 0
           ),
         ),
         child: NavigationBar(
-          selectedIndex: currentIndex, // The currently active tab index
-          onDestinationSelected: (index) => _onItemTapped(context, index), // Handle tab change
+          selectedIndex: currentIndex,  // The currently active tab index
+          onDestinationSelected: onTap,  // Forward the onTap callback from MainScreen
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.home), // Icon for Home tab
-              label: '', // No label text
+              icon: Icon(Icons.home),  // Icon for Home tab
+              label: '',  // No label text
             ),
             NavigationDestination(
-              icon: Icon(Icons.search), // Icon for Explore/Search tab
-              label: '', // No label text
+              icon: Icon(Icons.search),  // Icon for Explore/Search tab
+              label: '',  // No label text
             ),
             NavigationDestination(
-              icon: Icon(Icons.add), // Icon for Add Post tab
-              label: '', // No label text
+              icon: Icon(Icons.add),  // Icon for Add Post tab
+              label: '',  // No label text
             ),
             NavigationDestination(
-              icon: Icon(Icons.person), // Icon for Profile tab
-              label: '', // No label text
+              icon: Icon(Icons.person),  // Icon for Profile tab
+              label: '',  // No label text
             ),
           ],
         ),

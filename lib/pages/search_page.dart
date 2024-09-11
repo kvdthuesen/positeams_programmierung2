@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/pages/explore_page.dart';
+import 'package:positeams_programmierung2/pages/main_screen.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 
 /// Stateful Search page that retains its state during tab switching.
 /// Uses AutomaticKeepAliveClientMixin to preserve the state of the search field and recent searches.
 class Search extends StatefulWidget {
-  const Search({super.key});
+  final int previousIndex; // To return to the previous tab when canceling
+
+  const Search({super.key, this.previousIndex = 1}); // Default to explore (index 1)
 
   @override
   _SearchState createState() => _SearchState();
@@ -24,30 +26,23 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
     super.build(context); // Ensures AutomaticKeepAliveClientMixin works properly.
 
     return Scaffold(
-      // Custom AppBar with no leading back button and a cancel action
+      // Custom AppBar with no leading back button and a close action
       appBar: MyAppBar(
         title: 'PosiTeams',
         titleAlign: TextAlign.left,
         automaticallyImplyLeading: false, // Removes default back button
         actions: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: const Icon(Icons.close, size: 32, color: Colors.black), // Same size as the search icon
               onPressed: () {
-                // Navigate back to the explore page using pushReplacement
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Explore()),
-                );
+                // Return to the previous tab using MainScreen's tab navigation
+                MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                if (mainScreenState != null) {
+                  mainScreenState.onItemTapped(widget.previousIndex); // Switch back to previous tab
+                }
               },
-              child: const Text(
-                'Abbrechen',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 7, 110, 23),
-                  fontSize: 20,
-                  fontFamily: 'Futura',
-                ),
-              ),
             ),
           ),
         ],
@@ -71,7 +66,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // frame in green in focus
                 ),
-                prefixIcon: const Icon(Icons.search, color: Colors.black), // Search-Icon
+                prefixIcon: const Icon(Icons.search, color: Colors.black, size: 32), // Search-Icon
               ),
               style: const TextStyle(
                 fontFamily: 'Futura',

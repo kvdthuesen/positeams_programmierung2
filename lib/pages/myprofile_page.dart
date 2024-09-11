@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 import 'package:positeams_programmierung2/components/post.dart';
-import 'package:positeams_programmierung2/components/navigationbar.dart';
+import 'package:positeams_programmierung2/pages/main_screen.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
@@ -25,9 +25,12 @@ class _MyProfileState extends State<MyProfile> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              icon: const Icon(Icons.menu, size: 30),
+              icon: const Icon(Icons.menu, size: 32),
               onPressed: () {
-                print("Menu button pressed");
+                MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                if (mainScreenState != null) {
+                  mainScreenState.onItemTapped(5); // navigate to menu
+                }
               },
             ),
           ),
@@ -68,7 +71,7 @@ class _MyProfileState extends State<MyProfile> {
             ),
           ),
           SliverToBoxAdapter(
-            child: const SizedBox(height: 40), // Space to accommodate the floating avatar - bc backgroundcolor white
+            child: const SizedBox(height: 40), // Space to accommodate the floating avatar
           ),
           // Sliver for the name and description
           SliverToBoxAdapter(
@@ -160,7 +163,7 @@ class _MyProfileState extends State<MyProfile> {
           ),
         ],
       ),
-      bottomNavigationBar: const MyNavigationBar(currentIndex: 3),
+      // Remove bottomNavigationBar since it's handled by MainScreen
     );
   }
 
@@ -234,5 +237,3 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
         child != oldDelegate.child; // Rebuild if child widget changes
   }
 }
-
-

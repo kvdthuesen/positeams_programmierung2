@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/components/post.dart';
-import 'package:positeams_programmierung2/components/navigationbar.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 
 /// Homepage widget that maintains state between tab switches.
@@ -30,7 +29,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
         titleAlign: TextAlign.left,
         actions: [
           IconButton(
-            icon: Icon(Icons.swap_vert, size: 35),
+            icon: const Icon(Icons.swap_vert, size: 35),
             onPressed: () {
               // Action for sorting/swapping logic (to be implemented)
             },
@@ -38,7 +37,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
-              icon: Icon(Icons.filter_list, size: 35),
+              icon: const Icon(Icons.filter_list, size: 35),
               onPressed: () {
                 // Action for filtering logic (to be implemented)
               },
@@ -56,8 +55,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
           Post(),
         ],
       ),
-      // Bottom navigation bar that indicates the active tab (index 0 for Home)
-      bottomNavigationBar: const MyNavigationBar(currentIndex: 0),
+      // Remove bottomNavigationBar since it's handled by MainScreen
     );
   }
 }
