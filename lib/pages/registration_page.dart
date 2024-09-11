@@ -114,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: const EdgeInsets.symmetric(vertical: 14), // Medium button height
                     ),
                     child: const Text(
-                      "Register",
+                      "Registrieren",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16, // Medium text size
