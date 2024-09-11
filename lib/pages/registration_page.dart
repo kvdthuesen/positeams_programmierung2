@@ -58,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Create an account.',
+              'Erstelle ein Konto.',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w300, // Set light weight (300)
@@ -82,7 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: "Password",
+                labelText: "Passwort",
                 labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in green
                 border: const OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
@@ -95,7 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _confirmPasswordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: "Confirm Password",
+                labelText: "Passwort bestätigen",
                 labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in green
                 border: const OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
