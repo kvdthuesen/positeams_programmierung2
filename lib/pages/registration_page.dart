@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/components/appbar.dart'; // Importiere die MyAppBar
-import 'package:positeams_programmierung2/pages/home_page.dart'; // Importiere die HomePage
+import 'package:flutter/material.dart'; // Import flutter material
+import 'package:positeams_programmierung2/components/appbar.dart'; // Import Appbar component
+import 'package:positeams_programmierung2/pages/main_screen.dart'; // Import MainScreen
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,13 +19,13 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    // Hier kannst du Logik zur Registrierung hinzufügen (wird später mit Firebase ergänzt)
-    print("Email: $email, Passwort: $password, Passwort bestätigen: $confirmPassword");
+    // Placeholder registration logic (to be replaced with real logic)
+    print("Email: $email, Password: $password, Confirm Password: $confirmPassword");
 
-    // Leite zur HomePage weiter
+    // Navigate to MainScreen
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Homepage()),
+      MaterialPageRoute(builder: (context) => const MainScreen()),
     );
   }
 
@@ -33,24 +33,24 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        title: 'PosiTeams', // Verwende den Titel für die AppBar
-        titleAlign: TextAlign.center, // Zentriere den Titel
+        title: 'PosiTeams', // Use title for the AppBar
+        titleAlign: TextAlign.center, // Center the title
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, size: 30), // Zurück-Pfeil
+          icon: const Icon(Icons.arrow_back, size: 30), // Back arrow icon
           onPressed: () {
-            Navigator.pop(context); // Zurück zur vorherigen Seite
+            Navigator.pop(context); // Navigate back to the previous page
           },
         ),
         actions: [
           Opacity(
-            opacity: 0, // Unsichtbarer Platzhalter, um den Titel genau zu zentrieren
+            opacity: 0, // Invisible placeholder to perfectly center the title
             child: IconButton(
-              icon: const Icon(Icons.menu), // Beispiel-Icon als Platzhalter
-              onPressed: null, // Keine Aktion
+              icon: const Icon(Icons.menu), // Example icon as placeholder
+              onPressed: null, // No action for this button
             ),
           ),
         ],
-        showBottomBorder: true, // Zeige die Trennlinie unter der AppBar
+        showBottomBorder: true, // Show the bottom border in the AppBar
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -58,22 +58,22 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Erstelle ein Konto.',
+              'Create an account.',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w300, // Setze das Gewicht auf Light (300)
-                fontFamily: 'futura Condensed', // Setze die Schriftart auf futura Condensed
+                fontWeight: FontWeight.w300, // Set light weight (300)
+                fontFamily: 'futura Condensed', // Use futura Condensed font
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
-                labelText: "E-Mail",
-                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in Grün
+                labelText: "Email",
+                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in green
                 border: const OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // Rahmen in Grün bei Fokus
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // Green border when focused
                 ),
               ),
             ),
@@ -82,11 +82,11 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: "Passwort",
-                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in Grün
+                labelText: "Password",
+                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in green
                 border: const OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // Rahmen in Grün bei Fokus
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // Green border when focused
                 ),
               ),
             ),
@@ -95,29 +95,29 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _confirmPasswordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: "Passwort bestätigen",
-                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in Grün
+                labelText: "Confirm Password",
+                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // Label in green
                 border: const OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // Rahmen in Grün bei Fokus
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // Green border when focused
                 ),
               ),
             ),
-            const SizedBox(height: 28), // Zwischen den Abständen für bessere Höhe
+            const SizedBox(height: 28), // Add space between elements for better layout
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _register, // Beim Klick wird die _register-Methode aufgerufen
+                    onPressed: _register, // Call _register method when pressed
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 7, 110, 23), // Schaltfläche in Grün
-                      padding: const EdgeInsets.symmetric(vertical: 14), // Mittelgroße Höhe
+                      backgroundColor: const Color.fromARGB(255, 7, 110, 23), // Green button
+                      padding: const EdgeInsets.symmetric(vertical: 14), // Medium button height
                     ),
                     child: const Text(
-                      "Registrieren",
+                      "Register",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16, // Mittlere Textgröße
+                        fontSize: 16, // Medium text size
                       ),
                     ),
                   ),
