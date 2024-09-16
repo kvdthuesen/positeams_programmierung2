@@ -114,13 +114,13 @@ class Post extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(10),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();  // Close dialog on tap
-            },
+        return GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop(); // close dialog anywhere
+          },
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.all(10),
             child: Center(
               child: Image.asset(
                 'lib/images/test.jpg',  // Full-size image
