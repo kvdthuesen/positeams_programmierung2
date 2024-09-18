@@ -22,7 +22,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: automaticallyImplyLeading,
+      automaticallyImplyLeading: false, // removes the back button
       leading: leading, // using the leading parameter
       backgroundColor: Colors.white,
       title: Row(

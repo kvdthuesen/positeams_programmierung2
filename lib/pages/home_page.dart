@@ -35,6 +35,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
     return MyAppBar(
       title: 'PosiTeams',
       titleAlign: TextAlign.left,
+      leading: null,
       actions: [
         _buildPopupMenu(
           icon: Icons.swap_vert,
