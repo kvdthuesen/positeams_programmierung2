@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD0aaLYalf1WlINzum7bA2MrJeX3Alanaw',
-    appId: '1:194920375058:android:daddae12200efe518c09cb',
+    appId: '1:194920375058:android:8b9754d8ecee349a8c09cb',
     messagingSenderId: '194920375058',
     projectId: 'positeams-programmierung2',
     storageBucket: 'positeams-programmierung2.appspot.com',
@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'positeams-programmierung2.appspot.com',
     measurementId: 'G-J77TJEC0PT',
   );
+
 }

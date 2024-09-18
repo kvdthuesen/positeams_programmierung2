@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:194920375058:android:daddae12200efe518c09cb",
+        "mobilesdk_app_id": "1:194920375058:android:8b9754d8ecee349a8c09cb",
         "android_client_info": {
-          "package_name": "com.positeams.app"
+          "package_name": "com.example.app"
         }
       },
       "oauth_client": [],
@@ -26,9 +26,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:194920375058:android:1519ecc5e6c9563f8c09cb",
+        "mobilesdk_app_id": "1:194920375058:android:daddae12200efe518c09cb",
         "android_client_info": {
-          "package_name": "com.positeams.appcom.positeams.app"
+          "package_name": "com.positeams.app"
         }
       },
       "oauth_client": [],
