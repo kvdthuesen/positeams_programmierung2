@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddPost extends StatefulWidget {
   final int previousIndex; // Stores the index of the previous page (to return after closing)
@@ -18,6 +22,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
   final TextEditingController _textController = TextEditingController();
   final ValueNotifier<String> _textNotifier = ValueNotifier<String>('');
   String? _selectedShareOption; // Start with no selection
+  String? _imageUrl;  // To store the image URL
 
   @override
   void initState() {
@@ -76,11 +81,9 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: ElevatedButton(
-            onPressed: () {
-              MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
-              if (mainScreenState != null) {
-                mainScreenState.onItemTapped(3); // Switch to the Profile tab (index 3)
-              }
+            onPressed: () async {
+              // Save the post in Firestore
+              await _savePost();
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
@@ -104,6 +107,78 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       ],
       showBottomBorder: true,
     );
+  }
+// Function to save the post in Firestore
+  Future<void> _savePost() async {
+    if (_textController.text.isEmpty || _selectedShareOption == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Bitte Text eingeben und Sichtbarkeit auswählen.')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('posts').add({
+        'companyId': 'StarFinanz',  // Static for now
+        'contentText': _textController.text,  // Dynamic from text input
+        'contentImage': _imageUrl ?? '',  // Store image URL if available, empty otherwise
+        'createdAt': FieldValue.serverTimestamp(),  // Server-generated timestamp
+        'teamId': 'S-Hub',  // Static for now
+        'userId': 'Kirian',  // Static for now
+        'visibility': _selectedShareOption,  // Dynamic from dropdown
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Beitrag gepostet!')),
+      );
+
+      _textController.clear();  // Clear the text field
+      setState(() {
+        _selectedShareOption = null;  // Reset dropdown
+        _imageUrl = null;  // Reset image URL
+      });
+      // Navigation to myprofile_page after posting
+      MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+      if (mainScreenState != null) {
+        mainScreenState.onItemTapped(3); // Wechsel zum Profil-Tab (Index 3)
+      }
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fehler beim Speichern: $e')),
+      );
+    }
+  }
+
+  Future<String?> _pickAndUploadImage() async {
+    try {
+      // Use the image_picker package to pick an image
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile == null) {
+        // No image selected
+        return null;
+      }
+
+      File imageFile = File(pickedFile.path);
+
+      // Create a reference to Firebase Storage
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference storageRef = FirebaseStorage.instance.ref().child('post_images/$fileName');
+
+      // Upload the image to Firebase Storage
+      UploadTask uploadTask = storageRef.putFile(imageFile);
+      TaskSnapshot taskSnapshot = await uploadTask;
+
+      // Get the download URL of the uploaded image
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      return downloadUrl;  // Return the download URL to store in Firestore
+
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
   }
 
   // Dropdown for "Teilen mit" in AddPost-page
@@ -290,8 +365,23 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                   ),
                   const SizedBox(height: 16),
                   GestureDetector(
-                    onTap: () {
-                      // Placeholder for adding image functionality
+                    onTap: () async {
+                      // Pick an image and upload it to Firebase Storage
+                      String? imageUrl = await _pickAndUploadImage();
+
+                      if (imageUrl != null) {
+                        // Update the post with the selected image URL
+                        setState(() {
+                          _imageUrl = imageUrl;  // Save the image URL locally to display it in the UI
+                        });
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //    SnackBar(content: Text('Bild erfolgreich hinzugefügt!'))
+                        // );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Kein Bild ausgewählt.'))
+                        );
+                      }
                     },
                     child: AspectRatio(
                       aspectRatio: 21 / 9,
@@ -301,7 +391,8 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        child: Column(
+                        child: _imageUrl == null  // Check if image is already selected
+                            ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             Icon(Icons.add, size: 40, color: Colors.black),
@@ -311,10 +402,11 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                               style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: 'Futura'),
                             ),
                           ],
-                        ),
+                        )
+                            : Image.network(_imageUrl!, fit: BoxFit.cover),  // Display the selected image
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

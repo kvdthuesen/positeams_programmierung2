@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Erlaube den Zugriff auf deine Fotobibliothek, um Bilder hochzuladen.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Erlaube den Zugriff auf die Kamera, um Fotos aufzunehmen.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Erlaube den Zugriff auf das Mikrofon für Audioaufnahmen.</string>
 </dict>
 </plist>
