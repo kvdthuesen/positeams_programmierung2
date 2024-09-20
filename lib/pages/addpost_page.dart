@@ -128,6 +128,8 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         'visibility': _selectedShareOption,  // Dynamic from dropdown
       });
 
+      if (!mounted) return; // Ensures the context is still valid before using it
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Beitrag gepostet!')),
       );
@@ -137,6 +139,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         _selectedShareOption = null;  // Reset dropdown
         _imageUrl = null;  // Reset image URL
       });
+
       // Navigation to myprofile_page after posting
       MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
       if (mainScreenState != null) {
@@ -144,6 +147,8 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       }
 
     } catch (e) {
+      if (!mounted) return; // Ensures the context is still valid before using it
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fehler beim Speichern: $e')),
       );
@@ -176,7 +181,11 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       return downloadUrl;  // Return the download URL to store in Firestore
 
     } catch (e) {
-      print('Error uploading image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Fehler beim Hochladen des Bildes: $e')),
+        );
+      }
       return null;
     }
   }
@@ -378,11 +387,12 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                         //    SnackBar(content: Text('Bild erfolgreich hinzugefügt!'))
                         // );
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Kein Bild ausgewählt.'))
-                        );
-                      }
-                    },
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Kein Bild ausgewählt.')),
+                          );
+                        }
+                      }                    },
                     child: AspectRatio(
                       aspectRatio: 21 / 9,
                       child: Container(

@@ -18,7 +18,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
   String _selectedSortOption = 'oldest'; // Default selection for sorting
 
   // List to keep track of the selected options for filtering
-  List<String> _selectedFilterOptions = []; // No filters selected by default
+  final List<String> _selectedFilterOptions = []; // No filters selected by default
 
   @override
   Widget build(BuildContext context) {

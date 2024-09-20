@@ -57,16 +57,16 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
             // Search input field
             TextField(
               controller: _searchController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Suche Kolleg*innen, Teams, Stichworte ...",
-                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // label in green
+                labelStyle: TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // label in green
                 fillColor: Colors.white,
                 filled: true,
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 7, 110, 23)), // frame in green in focus
+                  borderSide: BorderSide(color: Color.fromARGB(255, 7, 110, 23)), // frame in green in focus
                 ),
-                prefixIcon: const Icon(Icons.search, color: Colors.black, size: 32), // Search-Icon
+                prefixIcon: Icon(Icons.search, color: Colors.black, size: 32), // Search-Icon
               ),
               style: const TextStyle(
                 fontFamily: 'Futura',

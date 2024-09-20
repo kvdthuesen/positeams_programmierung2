@@ -55,10 +55,10 @@ class _MyProfileState extends State<MyProfile> {
                   ),
                 ),
                 // Profile picture (floating above the header image)
-                Positioned(
+                const Positioned(
                   left: 24, // Positioning avatar
                   bottom: -40, // Pulling avatar up
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     radius: 45,
                     backgroundColor: Colors.white,
                     child: CircleAvatar(
@@ -70,8 +70,8 @@ class _MyProfileState extends State<MyProfile> {
               ],
             ),
           ),
-          SliverToBoxAdapter(
-            child: const SizedBox(height: 40), // Space to accommodate the floating avatar
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 40), // Space to accommodate the floating avatar
           ),
           // Sliver for the name and description
           SliverToBoxAdapter(
@@ -82,9 +82,9 @@ class _MyProfileState extends State<MyProfile> {
                 children: [
                   Container(
                     padding: const EdgeInsets.only(left: 10.0),
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Maya -',
                           style: TextStyle(

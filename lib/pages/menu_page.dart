@@ -168,7 +168,7 @@ E-Mail: support@positeams.de
   // Method to build a menu item with icon, title, and content
   Widget _buildMenuItem(IconData icon, String title, List<Widget> content) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
             color: Colors.transparent, // Transparent bottom border for menu items
@@ -189,7 +189,7 @@ E-Mail: support@positeams.de
   }
 
   // Style for the text content in menu items
-  TextStyle get _contentStyle => TextStyle(
+  TextStyle get _contentStyle => const TextStyle(
     fontSize: 16,
     fontFamily: 'Futura',
     color: Colors.black, // Font color - in list view
@@ -204,11 +204,11 @@ class MenuItem extends StatefulWidget {
 
   // Constructor for MenuItem
   const MenuItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.content,
-  }) : super(key: key);
+  });
 
   @override
   _MenuItemState createState() => _MenuItemState(); // Creates the state for the menu item
@@ -227,7 +227,7 @@ class _MenuItemState extends State<MenuItem> {
       ),
       title: Text(
         widget.title, // Title of the menu item
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 18,
           fontFamily: 'Futura',
         ),
