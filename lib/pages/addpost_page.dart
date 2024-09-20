@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddPost extends StatefulWidget {
   final int previousIndex; // Stores the index of the previous page (to return after closing)
@@ -21,56 +22,77 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
 
   final TextEditingController _textController = TextEditingController();
   final ValueNotifier<String> _textNotifier = ValueNotifier<String>('');
-  String? _selectedShareOption; // Start with no selection
-  String? _imageUrl;  // To store the image URL
+  String? _selectedShareOption;
+  String? _imageUrl;
+  String? _firstName; // Stores the first name of the current user
+  String? _companyId; // Stores the company ID of the current user
+  String? _teamId; // Stores the team ID of the current user
+  String? _departmentId; // Stores the department ID of the current user
+  String? _profileImage; // Stores the URL of the user's profile image
 
   @override
   void initState() {
     super.initState();
     _textController.addListener(() {
-      _textNotifier.value = _textController.text;
+      _textNotifier.value = _textController.text; // Update the text notifier when text changes
     });
+    _fetchUserData(); // Fetch user data from Firestore on initialization
+  }
+
+  Future<void> _fetchUserData() async {
+    User? user = FirebaseAuth.instance.currentUser; // Get the current authenticated user
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      setState(() {
+        // Update the state with user data retrieved from Firestore
+        _firstName = userDoc['firstName'];
+        _companyId = userDoc['companyId'];
+        _teamId = userDoc['teamId'];
+        _departmentId = userDoc['departmentId'];
+        _profileImage = userDoc['profileImage']; // Fetch profile image URL
+      });
+    }
   }
 
   @override
   void dispose() {
-    _textController.dispose();
-    _textNotifier.dispose();
+    _textController.dispose(); // Dispose the text controller
+    _textNotifier.dispose(); // Dispose the value notifier
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Ensure state is preserved with AutomaticKeepAliveClientMixin.
+    super.build(context); // Ensure the state is rebuilt when necessary
 
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: _buildAppBar(context), // Build the custom app bar
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildShareDropdown(),
+            _buildShareDropdown(), // Dropdown for selecting share options
             const SizedBox(height: 30),
-            _buildPostInput(),
+            _buildPostInput(), // Text input for the post content
             const SizedBox(height: 20),
-            const Divider(), // Horizontal divider
+            const Divider(),
             const SizedBox(height: 5),
-            _buildPreview(),
+            _buildPreview(), // Preview of the post
           ],
         ),
       ),
     );
   }
 
-  // AppBar with close button and post button
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return MyAppBar(
       title: 'PosiNews',
       titleAlign: TextAlign.center,
       leading: IconButton(
-        icon: const Icon(Icons.close, size: 30),
+        icon: const Icon(Icons.close, size: 30), // Close button
         onPressed: () {
+          // Navigate back to the previous index in the main screen
           MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
           if (mainScreenState != null && widget.previousIndex != mainScreenState.currentIndex) {
             mainScreenState.onItemTapped(widget.previousIndex); // Switch to the previous tab
@@ -82,14 +104,13 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
           padding: const EdgeInsets.only(right: 16.0),
           child: ElevatedButton(
             onPressed: () async {
-              // Save the post in Firestore
-              await _savePost();
+              await _savePost(); // Save the post when the button is pressed
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
               backgroundColor: const Color.fromARGB(255, 7, 110, 23),
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0), // Styling post button
-              minimumSize: const Size(0, 30), // Minimum height post button!
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+              minimumSize: const Size(0, 30),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: const Text(
@@ -105,11 +126,12 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
           ),
         ),
       ],
-      showBottomBorder: true,
+      showBottomBorder: true, // divider
     );
   }
 // Function to save the post in Firestore
   Future<void> _savePost() async {
+    // Validate input before saving the post
     if (_textController.text.isEmpty || _selectedShareOption == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Bitte Text eingeben und Sichtbarkeit auswählen.')),
@@ -119,36 +141,38 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
 
     try {
       await FirebaseFirestore.instance.collection('posts').add({
-        'companyId': 'StarFinanz',  // Static for now
-        'contentText': _textController.text,  // Dynamic from text input
-        'contentImage': _imageUrl ?? '',  // Store image URL if available, empty otherwise
-        'createdAt': FieldValue.serverTimestamp(),  // Server-generated timestamp
-        'teamId': 'S-Hub',  // Static for now
-        'userId': 'Kirian',  // Static for now
-        'visibility': _selectedShareOption,  // Dynamic from dropdown
+        'companyId': _companyId ?? 'Unknown', // Save company ID
+        'contentText': _textController.text, // Save post content
+        'contentImage': _imageUrl ?? '', // Save image URL if available
+        'createdAt': FieldValue.serverTimestamp(), // Save timestamp
+        'teamId': _teamId ?? 'Unknown', // Save team ID
+        'departmentId': _departmentId ?? 'Unknown', // Save department ID
+        'firstName': _firstName ?? 'Unknown', // Save user's first name
+        'visibility': _selectedShareOption, // Save visibility option
       });
 
       if (!mounted) return; // Ensures the context is still valid before using it
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Beitrag gepostet!')),
+        const SnackBar(content: Text('Beitrag gepostet!')), // Notify user of successful post
       );
 
       _textController.clear();  // Clear the text field
       setState(() {
-        _selectedShareOption = null;  // Reset dropdown
-        _imageUrl = null;  // Reset image URL
+        _selectedShareOption = null; // Reset share option/dropdown
+        _imageUrl = null; // Reset image URL
       });
 
       // Navigation to myprofile_page after posting
       MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
       if (mainScreenState != null) {
-        mainScreenState.onItemTapped(3); // Wechsel zum Profil-Tab (Index 3)
+        mainScreenState.onItemTapped(3); // change to Profile-Tab (Index 3)
       }
 
     } catch (e) {
       if (!mounted) return; // Ensures the context is still valid before using it
 
+      // Handle errors while saving the post
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fehler beim Speichern: $e')),
       );
@@ -159,11 +183,10 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
     try {
       // Use the image_picker package to pick an image
       final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery); // Open image picker
 
       if (pickedFile == null) {
-        // No image selected
-        return null;
+        return null; // Return if no image was selected
       }
 
       File imageFile = File(pickedFile.path);
@@ -182,6 +205,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
 
     } catch (e) {
       if (mounted) {
+        // Handle errors while uploading the image
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Fehler beim Hochladen des Bildes: $e')),
         );
@@ -201,7 +225,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         ),
         const SizedBox(width: 28),
         GestureDetector(
-          onTap: () => _showPopupMenu(context),
+          onTap: () => _showPopupMenu(context), // Show dropdown menu on tap
           child: Container(
             width: 300,
             height: 40,
@@ -214,7 +238,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _selectedShareOption ?? 'Auswählen',
+                  _selectedShareOption ?? 'Auswählen', // Display selected option or placeholder
                   style: TextStyle(
                     fontFamily: 'Futura',
                     fontSize: 16,
@@ -222,7 +246,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                     color: _selectedShareOption == null ? Colors.grey : Colors.black,
                   ),
                 ),
-                const Icon(Icons.arrow_drop_down, color: Colors.black),
+                const Icon(Icons.arrow_drop_down, color: Colors.black), // Dropdown icon
               ],
             ),
           ),
@@ -231,56 +255,33 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  // Popup-Menü for "Teilen mit"-Options
   void _showPopupMenu(BuildContext context) {
-    showMenu<String>(
+    // Show a popup menu to select sharing options
+    showMenu(
       context: context,
-      position: const RelativeRect.fromLTRB(242, 135, 1000, 0), // position of dropdown menu
-      items: <PopupMenuEntry<String>>[
-        _buildPopupMenuItem('Team'),
-        _buildPopupMenuItem('Abteilung'),
-        _buildPopupMenuItem('Firma'),
+      position: const RelativeRect.fromLTRB(300, 135, 1000, 0),
+      items: [
+        const PopupMenuItem<String>(
+          value: 'Team',
+          child: Text('Team', style: TextStyle(fontFamily: 'Futura')),
+        ),
+        const PopupMenuItem<String>(
+          value: 'Abteilung',
+          child: Text('Abteilung', style: TextStyle(fontFamily: 'Futura')),
+        ),
+        const PopupMenuItem<String>(
+          value: 'Firma',
+          child: Text('Firma', style: TextStyle(fontFamily: 'Futura')),
+        ),
       ],
-      color: Colors.white.withOpacity(0.95),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-    ).then((newValue) {
-      if (newValue != null) {
-        setState(() {
-          _selectedShareOption = newValue;
-        });
-      }
+      elevation: 8.0,
+    ).then((value) {
+      setState(() {
+        _selectedShareOption = value; // Update selected share option
+      });
     });
   }
 
-  // Popup-Menu Item
-  PopupMenuItem<String> _buildPopupMenuItem(String text) {
-    return PopupMenuItem<String>(
-      value: text,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              text,
-              style: TextStyle(
-                fontFamily: 'Futura',
-                fontSize: 16,
-                fontWeight: FontWeight.w300,
-                color: _selectedShareOption == text ? Colors.black : Colors.grey,
-              ),
-            ),
-            if (_selectedShareOption == text) const Icon(Icons.check, color: Colors.black),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Text input field for the post
   Widget _buildPostInput() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,13 +293,13 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         const SizedBox(width: 20),
         Expanded(
           child: TextField(
-            controller: _textController,
+            controller: _textController, // Attach the text controller
             minLines: 1,
             maxLines: null,
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color.fromARGB(255, 229, 229, 229),
-              hintText: 'Teile deinen Kolleg*innen deine PosiNews mit!',
+              hintText: 'Teile deinen Kolleg*innen deine PosiNews mit!', // Placeholder text
               hintStyle: const TextStyle(
                 fontFamily: 'Futura',
                 fontSize: 16,
@@ -319,34 +320,38 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  // Preview section for the post
   Widget _buildPreview() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Vorschau',
+          'Vorschau', // Label for preview section
           style: TextStyle(fontSize: 20, fontFamily: 'Futura Condensed', color: Colors.grey),
         ),
         const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CircleAvatar(
+            // Load profile image dynamically
+            CircleAvatar(
               radius: 28,
-              backgroundImage: AssetImage('lib/images/avatar.jpg'),
+              backgroundImage: _profileImage != null ? NetworkImage(_profileImage!) : null,
+              child: _profileImage == null
+                  ? const Icon(Icons.person, size: 28, color: Colors.grey) // Fallback icon if no image
+                  : null,
             ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Dynamic user display using user data
                   RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Maya ',
-                          style: TextStyle(
+                          text: '${_firstName ?? 'Unbekannter Benutzer'} ', // Display first name
+                          style: const TextStyle(
                             fontFamily: 'Futura',
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -354,19 +359,19 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                           ),
                         ),
                         TextSpan(
-                          text: '- Team Data Science (Business Intelligence)',
-                          style: TextStyle(color: Colors.grey, fontFamily: 'Futura', fontSize: 15),
+                          text: '- Team ${_teamId ?? 'Unbekanntes Team'} ( ${_departmentId ?? 'Unbekannte Abteilung'})', // Display team and department
+                          style: const TextStyle(color: Colors.grey, fontFamily: 'Futura', fontSize: 15),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 8),
                   ValueListenableBuilder<String>(
-                    valueListenable: _textNotifier,
+                    valueListenable: _textNotifier, // Listen to changes in the text notifier
                     builder: (context, text, child) {
                       return Text(
                         text.isEmpty
-                            ? 'Hier werden dein News Text angezeigt. Klasse. Toll. Wuhuu. Erfolge. Projekte  '
+                            ? 'Hier werden dein News Text angezeigt. Klasse. Toll. Wuhuu. Erfolge. Projekte.' // Placeholder for empty text
                             : text,
                         style: const TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'Futura'),
                       );
@@ -379,20 +384,18 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                       String? imageUrl = await _pickAndUploadImage();
 
                       if (imageUrl != null) {
-                        // Update the post with the selected image URL
                         setState(() {
                           _imageUrl = imageUrl;  // Save the image URL locally to display it in the UI
                         });
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //    SnackBar(content: Text('Bild erfolgreich hinzugefügt!'))
-                        // );
                       } else {
                         if (mounted) {
+                          // Notify user if no image was selected
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Kein Bild ausgewählt.')),
                           );
                         }
-                      }                    },
+                      }
+                    },
                     child: AspectRatio(
                       aspectRatio: 21 / 9,
                       child: Container(
@@ -416,7 +419,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                             : Image.network(_imageUrl!, fit: BoxFit.cover),  // Display the selected image
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -426,9 +429,3 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
     );
   }
 }
-
-
-
-
-
-
