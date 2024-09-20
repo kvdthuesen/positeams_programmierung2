@@ -1,4 +1,4 @@
-package com.example.positeams_programmierung2
+package com.positeams.app
 
 import io.flutter.embedding.android.FlutterActivity
 
