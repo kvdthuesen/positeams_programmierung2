@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Remove debug banner
-      home: AuthPage(), // Start with homepage
+      home: const AuthPage(), // Start with homepage
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white, // Set global background color to white
       ),

@@ -31,7 +31,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           RichText(
             text: TextSpan(
               children: [
-                TextSpan(
+                const TextSpan(
                   text: 'Posi',
                   style: TextStyle(
                     fontFamily: 'futura Condensed',
@@ -42,7 +42,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
                 TextSpan(
                   text: title.replaceFirst('Posi', ''),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'futura Condensed',
                     fontSize: 32,
                     fontWeight: FontWeight.w500,
@@ -58,9 +58,9 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions, // adds the icons on the right-hand side
       bottom: showBottomBorder
           ? PreferredSize( // divider - design
-        preferredSize: Size.fromHeight(1.0),
+        preferredSize: const Size.fromHeight(1.0),
         child: Container(
-          color: Color.fromARGB(255, 229, 229, 229),
+          color: const Color.fromARGB(255, 229, 229, 229),
           height: 1.0, //
         ),
       )

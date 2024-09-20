@@ -1,10 +1,10 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class AddPost extends StatefulWidget {
   final int previousIndex; // Stores the index of the previous page (to return after closing)
@@ -112,7 +112,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
   Future<void> _savePost() async {
     if (_textController.text.isEmpty || _selectedShareOption == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Bitte Text eingeben und Sichtbarkeit auswählen.')),
+        const SnackBar(content: Text('Bitte Text eingeben und Sichtbarkeit auswählen.')),
       );
       return;
     }
@@ -129,7 +129,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Beitrag gepostet!')),
+        const SnackBar(content: Text('Beitrag gepostet!')),
       );
 
       _textController.clear();  // Clear the text field
@@ -379,7 +379,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                         // );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Kein Bild ausgewählt.'))
+                            const SnackBar(content: Text('Kein Bild ausgewählt.'))
                         );
                       }
                     },
@@ -392,9 +392,9 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: _imageUrl == null  // Check if image is already selected
-                            ? Column(
+                            ? const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Icons.add, size: 40, color: Colors.black),
                             SizedBox(height: 8),
                             Text(

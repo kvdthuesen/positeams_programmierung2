@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/pages/home_page.dart';
 import 'package:positeams_programmierung2/pages/explore_page.dart';
-import 'package:positeams_programmierung2/pages/addPost_page.dart';
+import 'package:positeams_programmierung2/pages/addpost_page.dart';
 import 'package:positeams_programmierung2/pages/myprofile_page.dart';
 import 'package:positeams_programmierung2/components/navigationbar.dart';
 import 'package:positeams_programmierung2/pages/search_page.dart';

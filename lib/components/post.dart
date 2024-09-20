@@ -83,9 +83,9 @@ class Post extends StatelessWidget {
                     const SizedBox(height: 5), // Space after image
 
                     // Row of interaction buttons (Like, Love, Applause, Chat)
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Space between buttons
-                      children: const [
+                      children: [
                         InteractionButton(icon: Icons.thumb_up_alt_outlined, label: 'Gefällt mir!'),
                         InteractionButton(icon: Icons.favorite_border, label: 'Liebe'),
                         InteractionButton(icon: Icons.emoji_emotions_outlined, label: 'Applaus'),
@@ -140,7 +140,7 @@ class InteractionButton extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const InteractionButton({required this.icon, required this.label, Key? key}) : super(key: key);
+  const InteractionButton({required this.icon, required this.label, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +168,7 @@ class InteractionButton extends StatelessWidget {
 /// The design hints at integration with a chat platform (e.g., Microsoft Teams).
 /// Since no dynamic state is required, this can remain a StatelessWidget.
 class ChatButton extends StatelessWidget {
-  const ChatButton({Key? key}) : super(key: key); // Const constructor to resolve error
+  const ChatButton({super.key}); // Const constructor to resolve error
 
   @override
   Widget build(BuildContext context) {
