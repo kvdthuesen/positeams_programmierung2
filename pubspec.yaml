@@ -70,6 +70,7 @@ flutter:
     - lib/images/avatar.jpg
     - lib/images/test.jpg
     - lib/assets/default_avatar.png
+    - lib/assets/default_background.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart'; // Import flutter material
 import 'package:positeams_programmierung2/components/appbar.dart'; // Import Appbar component
 import 'package:positeams_programmierung2/pages/main_screen.dart'; // Import MainScreen
+import 'package:positeams_programmierung2/components/profileheader.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
@@ -31,10 +32,13 @@ class _RegisterPageState extends State<RegisterPage> {
   File? _profileImage; // Variable to store the selected image
   String? _profileImageUrl; // URL of the uploaded profile image
   bool _isUploadingProfileImage = false; // Variable to track the uploading state
+  bool _isUploadingBackgroundImage = false; // Variable to track the uploading state for the background image
+  File? _backgroundImage; // Stores the selected background image
+  String? _backgroundImageUrl; // Stores the URL of the uploaded background image
 
   /// Check if password meets security requirements
   bool _isPasswordValid(String password) {
-    final passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}$');
+    final passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$&*~]).{8,}$');
     return passwordRegex.hasMatch(password);
   }
 
@@ -186,7 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
       String uid = userCredential.user!.uid;
 
-      // Firestore: Save additional user details, including profileImageUrl
+      // Save user data in Firestore along with profileImage and backgroundImage URLs
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'firstName': firstName,
         'lastName': lastName,
@@ -195,7 +199,8 @@ class _RegisterPageState extends State<RegisterPage> {
         'teamId': teamId,
         'departmentId': departmentId,
         'userId': uid,
-        'profileImage': _profileImageUrl ?? '', // Save profile image URL if available
+        'profileImage': _profileImageUrl ?? '', // Save the profile image URL
+        'backgroundImage': _backgroundImageUrl ?? '', // Save the background image URL
       });
 
       // After registration, navigate to the main screen
@@ -338,7 +343,46 @@ class _RegisterPageState extends State<RegisterPage> {
           });
         }
       }
-    }  }
+    }
+  }
+
+  // Method to pick and upload the background image to Firebase Storage
+  Future<void> _pickAndUploadBackgroundImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _backgroundImage = File(pickedFile.path);
+        _isUploadingBackgroundImage = true; // Show loading indicator for background image
+      });
+
+      try {
+        // Create a reference in Firebase Storage and upload the file
+        String fileName = 'background_images/${DateTime.now().millisecondsSinceEpoch}';
+        Reference storageRef = FirebaseStorage.instance.ref().child(fileName);
+
+        UploadTask uploadTask = storageRef.putFile(_backgroundImage!);
+        TaskSnapshot taskSnapshot = await uploadTask;
+
+        // Retrieve the download URL for the uploaded background image
+        _backgroundImageUrl = await taskSnapshot.ref.getDownloadURL();
+      } catch (e) {
+        // If an error occurs during the upload, show a Snackbar with the error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error uploading background image: $e')),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isUploadingBackgroundImage = false; // Reset loading state after upload
+          });
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -400,52 +444,26 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 16),
 
                 if (_currentStep == 0) ...[
-            _buildTextField(controller: _emailController, labelText: "Email"),
-        _buildTextField(controller: _passwordController, labelText: "Passwort", obscureText: true),
-        _buildTextField(controller: _confirmPasswordController, labelText: "Passwort bestätigen", obscureText: true),
-        ],
+                         _buildTextField(controller: _emailController, labelText: "Email"),
+                         _buildTextField(controller: _passwordController, labelText: "Passwort", obscureText: true),
+                         _buildTextField(controller: _confirmPasswordController, labelText: "Passwort bestätigen", obscureText: true),
+                  ],
 
                     if (_currentStep == 1) ...[
                       Center(
-                        child: Stack(
-                          alignment: Alignment.center, // Center everything inside the stack
-                          children: [
-                            // Circle for profile image or loading indicator
-                            CircleAvatar(
-                              radius: 100,
-                              backgroundImage: _profileImage != null
-                                  ? FileImage(_profileImage!)
-                                  : const AssetImage('lib/assets/default_avatar.png') as ImageProvider,
-                              backgroundColor: const Color.fromARGB(255, 229, 229, 229), // Grey background for default avatar
-                            ),
-
-                            // Show loading indicator when uploading
-                            if (_isUploadingProfileImage)
-                              const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 7, 110, 23)), // Green loading circle
-                              ),
-
-                            // Show the icon button when no image is being uploaded
-                            if (!_isUploadingProfileImage)
-                              Positioned(
-                                top: _profileImage == null ? 57 : 60,  // Higher when no image is selected
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.camera_alt,
-                                    size: 60,
-                                    color: _profileImage == null
-                                        ? const Color.fromARGB(255, 7, 110, 23) // Green before selecting image
-                                        : const Color.fromARGB(210, 255, 255, 255), // White after selecting image
-                                  ),
-                                  onPressed: _pickAndUploadProfileImage,
-                                ),
-                              ),
-                          ],
+                        child: ProfileHeader(
+                          profileImage: _profileImage,
+                          profileImageUrl: _profileImageUrl,
+                          onProfileImagePick: _pickAndUploadProfileImage,
+                          backgroundImage: _backgroundImage,
+                          backgroundImageUrl: _backgroundImageUrl,
+                          onBackgroundImagePick: _pickAndUploadBackgroundImage,
+                          isUploadingProfileImage: _isUploadingProfileImage,
+                          isUploadingBackgroundImage: _isUploadingBackgroundImage,
+                          bottomSpacing: 25,
                         ),
                       ),
-                      const SizedBox(height: 16),
-
-                      // Text fields for first name and last name
+                      const SizedBox(height: 40), // Space to accommodate the floating profile image
                       _buildTextField(controller: _firstNameController, labelText: "Vorname"),
                       _buildTextField(controller: _lastNameController, labelText: "Nachname"),
                     ],

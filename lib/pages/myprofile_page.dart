@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 import 'package:positeams_programmierung2/components/post.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:positeams_programmierung2/components/profileheader.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
@@ -13,6 +16,48 @@ class MyProfile extends StatefulWidget {
 class _MyProfileState extends State<MyProfile> {
   // Track which button is selected: 'Beiträge' or 'Reaktionen'
   String _selectedButton = 'Beiträge'; // Default selected button
+  String? profileImageUrl;
+  String? backgroundImageUrl;
+  String? firstName;
+  String? lastName;
+  String? team;
+  String? department;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData(); // Load profile data on initialization
+  }
+
+  // Load the profile data from Firestore
+  Future<void> _loadProfileData() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        setState(() {
+          profileImageUrl = userDoc['profileImage'];
+          backgroundImageUrl = userDoc['backgroundImage'];
+          firstName = userDoc['firstName'];
+          lastName = userDoc['lastName'];
+          team = userDoc['teamId'];
+          department = userDoc['departmentId'];
+        });
+      } catch (e) {
+        // Verwende ScaffoldMessenger für Fehlermeldungen
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error loading profile data: $e')),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,37 +86,22 @@ class _MyProfileState extends State<MyProfile> {
           // Sliver for profile header, image, and avatar
           SliverToBoxAdapter(
             child: Stack(
-              clipBehavior: Clip.none, // allows the avatar to overflow the stack
+              clipBehavior: Clip.none,
               children: [
-                // Header image
-                Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    image: const DecorationImage(
-                      image: AssetImage('lib/images/hermes.jpg'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                // Profile picture (floating above the header image)
-                const Positioned(
-                  left: 24, // Positioning avatar
-                  bottom: -40, // Pulling avatar up
-                  child: CircleAvatar(
-                    radius: 45,
-                    backgroundColor: Colors.white,
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('lib/images/avatar.jpg'),
-                    ),
-                  ),
+                ProfileHeader(
+                  profileImage: null,
+                  profileImageUrl: profileImageUrl,
+                  onProfileImagePick: null,
+                  backgroundImage: null,
+                  backgroundImageUrl: backgroundImageUrl,
+                  onBackgroundImagePick: null,
+                  showEditIcons: false,
+                  isUploadingProfileImage: false,
+                  isUploadingBackgroundImage: false,
+                  bottomSpacing: 50,
                 ),
               ],
             ),
-          ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 40), // Space to accommodate the floating avatar
           ),
           // Sliver for the name and description
           SliverToBoxAdapter(
@@ -82,19 +112,22 @@ class _MyProfileState extends State<MyProfile> {
                 children: [
                   Container(
                     padding: const EdgeInsets.only(left: 10.0),
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Maya -',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'Futura',
+                          firstName != null && lastName != null
+                              ? '$firstName $lastName'
+                              : 'Loading...',
+                          style: const TextStyle(
+                            fontSize: 25,
+                            fontFamily: 'futura Condensed',
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         Text(
-                          'Team Data Science (Business Intelligence)',
-                          style: TextStyle(
+                          'Team $team ${department != null && department!.isNotEmpty ? '($department)' : ''}',
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.grey,
                             fontFamily: 'Futura',
