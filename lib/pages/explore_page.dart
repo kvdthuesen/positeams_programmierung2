@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/components/post.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
@@ -12,9 +13,13 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
-
   @override
   bool get wantKeepAlive => true;
+
+  // Fetches posts from Firestore
+  Stream<QuerySnapshot> _getPostsStream() {
+    return FirebaseFirestore.instance.collection('posts').snapshots();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +50,36 @@ class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
       ),
 
       // Main content of the Explore page
-      body: ListView(
-        children: const [
-          SizedBox(height: 8), // Adds spacing at the top
-          Post(),  // Post widget displaying content
-          Post(),
-          Post(),
-          Post(),
-        ],
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _getPostsStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error loading posts'));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // List of posts
+          final posts = snapshot.data!.docs;
+
+          // Return a list of post widgets based on Firestore data
+          return ListView.builder(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index].data() as Map<String, dynamic>;
+
+              return Post(
+                firstName: post['firstName'] ?? 'Unknown', // Dynamically display user's first name
+                teamId: post['teamId'] ?? 'Unknown Team', // Dynamically display team
+                departmentId: post['departmentId'] ?? 'Unknown Department', // Dynamically display department
+                contentText: post['contentText'] ?? 'No content', // Dynamically display post text
+                contentImage: post['contentImage'] ?? '', // Dynamically display post image
+                profileImage: post['profileImage'] ?? '', // Dynamically display profileImage
+              );
+            },
+          );
+        },
       ),
     );
   }

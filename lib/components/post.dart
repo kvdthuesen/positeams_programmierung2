@@ -3,7 +3,22 @@ import 'package:flutter/material.dart';
 /// Main widget for displaying a post with user info, post content, image preview, and interaction buttons.
 /// StatelessWidget is appropriate here as no dynamic state management is needed.
 class Post extends StatelessWidget {
-  const Post({super.key});
+  final String firstName;
+  final String teamId;
+  final String departmentId;
+  final String contentText;
+  final String contentImage;
+  final String profileImage;  // New field for profile image URL
+
+  const Post({
+    super.key,
+    required this.firstName,
+    required this.teamId,
+    required this.departmentId,
+    required this.contentText,
+    required this.contentImage,
+    required this.profileImage,  // Add this to the constructor
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +31,11 @@ class Post extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User avatar
-              const CircleAvatar(
-                backgroundImage: AssetImage('lib/images/avatar.jpg'), // User's avatar image
+              // User avatar (dynamic profile image or default avatar)
+              CircleAvatar(
+                backgroundImage: profileImage.isNotEmpty
+                    ? NetworkImage(profileImage)  // Load dynamic profile image
+                    : const AssetImage('lib/assets/default_avatar.png') as ImageProvider,  // Fallback to default image
                 radius: 28,
               ),
               const SizedBox(width: 10), // Space between avatar and text
@@ -30,11 +47,11 @@ class Post extends StatelessWidget {
                   children: [
                     // User name and team
                     RichText(
-                      text: const TextSpan(
+                      text: TextSpan(
                         children: [
                           TextSpan(
-                            text: 'Maya ',  // User's name
-                            style: TextStyle(
+                            text: '$firstName ',  // Dynamically showing the user's name
+                            style: const TextStyle(
                               fontFamily: 'Futura',
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
@@ -42,8 +59,8 @@ class Post extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: '- Team Data Science (Business Intelligence)',  // User's team
-                            style: TextStyle(
+                            text: '- Team $teamId ($departmentId)',  // Dynamically showing the user's team and department
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontFamily: 'Futura',
                             ),
@@ -54,9 +71,9 @@ class Post extends StatelessWidget {
                     const SizedBox(height: 4), // Space between name/team and post text
 
                     // Post text content
-                    const Text(
-                      'Hier kommt der Beitragstext hin! Erfolge, Meilensteine, Positive News werden geteilt',  // Post text
-                      style: TextStyle(
+                    Text(
+                      contentText,  // Dynamically showing the post text content
+                      style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Futura',
                         fontSize: 14,
@@ -64,22 +81,26 @@ class Post extends StatelessWidget {
                     ),
                     const SizedBox(height: 16), // Space before image
 
-                    // Image preview with tap to expand functionality
-                    GestureDetector(
-                      onTap: () {
-                        _showFullImage(context);
-                      },
-                      child: AspectRatio(
-                        aspectRatio: 21 / 9, // Image aspect ratio
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5.0),
-                          child: Image.asset(
-                            'lib/images/test.jpg', // Post image preview
-                            fit: BoxFit.cover,  // Ensures the image fits within the box
+                    // Check if contentImage is not empty
+                    if (contentImage.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          _showFullImage(context, contentImage);
+                        },
+                        child: AspectRatio(
+                          aspectRatio: 21 / 9, // Image aspect ratio
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5.0),
+                            child: Image.network(
+                              contentImage, // Dynamically showing the post image
+                              fit: BoxFit.cover,  // Ensures the image fits within the box
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Text('Image failed to load'); // Handle loading error
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     const SizedBox(height: 5), // Space after image
 
                     // Row of interaction buttons (Like, Love, Applause, Chat)
@@ -110,7 +131,7 @@ class Post extends StatelessWidget {
   }
 
   /// Displays the full-size image in a dialog when tapped
-  void _showFullImage(BuildContext context) {
+  void _showFullImage(BuildContext context, String imageUrl) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -122,9 +143,12 @@ class Post extends StatelessWidget {
             backgroundColor: Colors.transparent,
             insetPadding: const EdgeInsets.all(10),
             child: Center(
-              child: Image.asset(
-                'lib/images/test.jpg',  // Full-size image
+              child: Image.network(
+                imageUrl,  // Dynamically showing the full-size image
                 fit: BoxFit.contain,  // Ensures the image scales to fit the screen
+                errorBuilder: (context, error, stackTrace) {
+                  return const Text('Image failed to load'); // Handle loading error
+                },
               ),
             ),
           ),

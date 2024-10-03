@@ -5,6 +5,7 @@ import 'package:positeams_programmierung2/pages/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:positeams_programmierung2/components/profileheader.dart';
+import 'package:positeams_programmierung2/components/post_service.dart'; // Import the PostService
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
@@ -14,7 +15,6 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
-  // Track which button is selected: 'Beiträge' or 'Reaktionen'
   String _selectedButton = 'Beiträge'; // Default selected button
   String? profileImageUrl;
   String? backgroundImageUrl;
@@ -49,13 +49,22 @@ class _MyProfileState extends State<MyProfile> {
           department = userDoc['departmentId'];
         });
       } catch (e) {
-        // Verwende ScaffoldMessenger für Fehlermeldungen
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error loading profile data: $e')),
           );
         }
       }
+    }
+  }
+
+  /// Fetches the posts stream based on the selected button
+  Stream<QuerySnapshot> _getPostsStream() {
+    // Check which button is selected and return the corresponding stream
+    if (_selectedButton == 'Beiträge') {
+      return PostService().getUserPostsStream(); // Fetch posts by current userId
+    } else {
+      return PostService().getAllPostsStream(); // Fetch all posts
     }
   }
 
@@ -187,16 +196,43 @@ class _MyProfileState extends State<MyProfile> {
           // Sliver for posts content
           SliverList(
             delegate: SliverChildListDelegate(
-              const [
-                Post(),
-                Post(),
-                Post(),
+              [
+                StreamBuilder<QuerySnapshot>(
+                  stream: _getPostsStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return const Text('Error loading posts');
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final posts = snapshot.data?.docs ?? [];
+
+                    if (posts.isEmpty) {
+                      return const Center(child: Text('No posts available.'));
+                    }
+
+                    return Column(
+                      children: posts.map((doc) {
+                        final post = doc.data() as Map<String, dynamic>;
+                        return Post(
+                          firstName: post['firstName'] ?? 'Unknown',
+                          teamId: post['teamId'] ?? 'Unknown Team',
+                          departmentId: post['departmentId'] ?? 'Unknown Department',
+                          contentText: post['contentText'] ?? 'No content',
+                          contentImage: post['contentImage'] ?? '',
+                          profileImage: post['profileImage'] ?? '',
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ],
       ),
-      // Remove bottomNavigationBar since it's handled by MainScreen
     );
   }
 

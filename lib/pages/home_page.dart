@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:positeams_programmierung2/components/post.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:positeams_programmierung2/components/post_listwidget.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 
 class Homepage extends StatefulWidget {
@@ -10,15 +12,41 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin {
-  /// Ensures that the state of this widget is preserved when switching tabs.
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => true; // Ensures that the state of this widget is preserved when switching tabs.
 
   // Variable to keep track of the currently selected option for sorting
   String _selectedSortOption = 'oldest'; // Default selection for sorting
 
-  // List to keep track of the selected options for filtering
-  final List<String> _selectedFilterOptions = []; // No filters selected by default
+  // Variable to keep track of the selected filter option (only one allowed)
+  String _selectedFilterOption = 'Firma'; // Default filter option is "Firma"
+
+  // Variables to store user profile details
+  String? _companyId;
+  String? _teamId;
+  String? _departmentId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile(); // Load the user profile data when the widget initializes
+  }
+
+  // Fetch the user's profile from Firestore
+  Future<void> _loadUserProfile() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+      if (userDoc.exists) {
+        setState(() {
+          _companyId = userDoc['companyId'];
+          _teamId = userDoc['teamId'];
+          _departmentId = userDoc['departmentId'];
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,15 +65,15 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
       titleAlign: TextAlign.left,
       leading: null,
       actions: [
-        _buildPopupMenu(
+        _buildSingleSelectPopupMenu(
           icon: Icons.swap_vert,
           selectedValue: _selectedSortOption,
           options: ['Älteste', 'Neuste', 'Beliebteste'],
           onSelected: _sortPosts,
         ),
-        _buildMultiSelectPopupMenu(
+        _buildSingleSelectPopupMenu(
           icon: Icons.filter_list,
-          selectedValues: _selectedFilterOptions,
+          selectedValue: _selectedFilterOption,
           options: ['Team', 'Abteilung', 'Firma'],
           onSelected: _filterPosts,
         ),
@@ -53,8 +81,39 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
     );
   }
 
-  // Builds a reusable popup menu for single selection (sorting)
-  Widget _buildPopupMenu({
+  // Builds the body of the homepage, including the list of posts
+  Widget _buildBody() {
+    // Ensure the user profile data is loaded before fetching posts
+    if (_companyId == null || _teamId == null || _departmentId == null) {
+      return const Center(child: CircularProgressIndicator()); // Show loading spinner while user data is being fetched
+    }
+
+    // Pass the filter options and user data to the PostListWidget
+    return PostListWidget(
+      selectedFilterOption: _selectedFilterOption,
+      selectedSortOption: _selectedSortOption,
+      companyId: _companyId,
+      teamId: _teamId,
+      departmentId: _departmentId,
+    );
+  }
+
+  // Updates the selected sorting option and sorts the posts
+  void _sortPosts(String sortOption) {
+    setState(() {
+      _selectedSortOption = sortOption;
+    });
+  }
+
+  // Updates the selected filtering option (only one allowed)
+  void _filterPosts(String filterOption) {
+    setState(() {
+      _selectedFilterOption = filterOption; // Only one filter is allowed
+    });
+  }
+
+  // Builds a reusable popup menu for single selection (filtering)
+  Widget _buildSingleSelectPopupMenu({
     required IconData icon,
     required String selectedValue,
     required List<String> options,
@@ -74,34 +133,6 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
       color: Colors.white.withOpacity(0.95),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
-      ),
-    );
-  }
-
-  // Builds a reusable popup menu for multi-selection (filtering)
-  Widget _buildMultiSelectPopupMenu({
-    required IconData icon,
-    required List<String> selectedValues,
-    required List<String> options,
-    required void Function(String) onSelected,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0), // distance to page-end
-      child: PopupMenuButton<String>(
-        onSelected: onSelected,
-        itemBuilder: (BuildContext context) {
-          return options.map((option) {
-            return PopupMenuItem<String>(
-              value: option,
-              child: _buildMultiSelectMenuItem(option, selectedValues),
-            );
-          }).toList();
-        },
-        icon: Icon(icon, size: 35),
-        color: Colors.white.withOpacity(0.95),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
       ),
     );
   }
@@ -127,61 +158,5 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
         ],
       ),
     );
-  }
-
-  // Builds individual menu items for multi-selection (filters)
-  Widget _buildMultiSelectMenuItem(String text, List<String> selectedValues) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            text,
-            style: TextStyle(
-              fontFamily: 'Futura',
-              fontSize: 16,
-              fontWeight: FontWeight.w300,
-              color: selectedValues.contains(text) ? Colors.black : Colors.grey,
-            ),
-          ),
-          if (selectedValues.contains(text)) const Icon(Icons.check, color: Colors.black),
-        ],
-      ),
-    );
-  }
-
-  // Builds the body of the homepage, including the list of posts
-  Widget _buildBody() {
-    return ListView(
-      children: const [
-        SizedBox(height: 8),
-        Post(),
-        Post(),
-        Post(),
-        Post(),
-      ],
-    );
-  }
-
-  // Updates the selected sorting option and sorts the posts
-  void _sortPosts(String sortOption) {
-    setState(() {
-      _selectedSortOption = sortOption;
-      // Implement sorting logic based on 'sortOption'
-    });
-  }
-
-  // Updates the selected filtering options
-  void _filterPosts(String filterOption) {
-    setState(() {
-      if (_selectedFilterOptions.contains(filterOption)) {
-        _selectedFilterOptions.remove(filterOption); // Deselect if already selected
-      } else {
-        _selectedFilterOptions.add(filterOption); // Add if not selected
-      }
-      // Implement filtering logic based on '_selectedFilterOptions'
-    });
   }
 }

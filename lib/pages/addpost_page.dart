@@ -130,6 +130,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
     );
   }
 // Function to save the post in Firestore
+// Function to save the post in Firestore
   Future<void> _savePost() async {
     // Validate input before saving the post
     if (_textController.text.isEmpty || _selectedShareOption == null) {
@@ -140,35 +141,47 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
     }
 
     try {
-      await FirebaseFirestore.instance.collection('posts').add({
-        'companyId': _companyId ?? 'Unknown', // Save company ID
-        'contentText': _textController.text, // Save post content
-        'contentImage': _imageUrl ?? '', // Save image URL if available
-        'createdAt': FieldValue.serverTimestamp(), // Save timestamp
-        'teamId': _teamId ?? 'Unknown', // Save team ID
-        'departmentId': _departmentId ?? 'Unknown', // Save department ID
-        'firstName': _firstName ?? 'Unknown', // Save user's first name
-        'visibility': _selectedShareOption, // Save visibility option
-      });
+      // Retrieve the authenticated user's ID
+      final user = FirebaseAuth.instance.currentUser;
+      final userId = user?.uid;
 
-      if (!mounted) return; // Ensures the context is still valid before using it
+      if (userId != null) {
+        // Fetch the user's profileImageUrl from Firestore
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        final profileImageUrl = userDoc['profileImage'] ?? ''; // Fetch profile image URL
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Beitrag gepostet!')), // Notify user of successful post
-      );
+        // Add the post to Firestore
+        await FirebaseFirestore.instance.collection('posts').add({
+          'userId': userId, // Save the authenticated user's ID
+          'companyId': _companyId ?? 'Unknown', // Save company ID
+          'contentText': _textController.text, // Save post content
+          'contentImage': _imageUrl ?? '', // Save image URL if available
+          'createdAt': FieldValue.serverTimestamp(), // Save timestamp
+          'teamId': _teamId ?? 'Unknown', // Save team ID
+          'departmentId': _departmentId ?? 'Unknown', // Save department ID
+          'firstName': _firstName ?? 'Unknown', // Save user's first name
+          'profileImage': profileImageUrl, // Save user's profile image URL
+          'visibility': _selectedShareOption, // Save visibility option
+        });
 
-      _textController.clear();  // Clear the text field
-      setState(() {
-        _selectedShareOption = null; // Reset share option/dropdown
-        _imageUrl = null; // Reset image URL
-      });
+        if (!mounted) return; // Ensures the context is still valid before using it
 
-      // Navigation to myprofile_page after posting
-      MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
-      if (mainScreenState != null) {
-        mainScreenState.onItemTapped(3); // change to Profile-Tab (Index 3)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Beitrag gepostet!')), // Notify user of successful post
+        );
+
+        _textController.clear();  // Clear the text field
+        setState(() {
+          _selectedShareOption = null; // Reset share option/dropdown
+          _imageUrl = null; // Reset image URL
+        });
+
+        // Navigation to myprofile_page after posting
+        MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+        if (mainScreenState != null) {
+          mainScreenState.onItemTapped(3); // change to Profile-Tab (Index 3)
+        }
       }
-
     } catch (e) {
       if (!mounted) return; // Ensures the context is still valid before using it
 
@@ -178,6 +191,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       );
     }
   }
+
 
   Future<String?> _pickAndUploadImage() async {
     try {
