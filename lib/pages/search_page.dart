@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 
@@ -14,12 +16,105 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
+  final TextEditingController _searchController = TextEditingController(); // Controller for search input
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase authentication instance
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore instance for database operations
 
-  final TextEditingController _searchController = TextEditingController();
+  List<String> _recentSearches = []; // To store recent search queries
+  String? _lastSelectedSearch; // Variable to store the last selected search
 
   /// Ensures that the widget's state (such as the search field input) is preserved when switching tabs.
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentSearches(); // Load recent searches when the page is initialized
+  }
+
+  // Function to load the recent searches from Firebase
+  Future<void> _loadRecentSearches() async {
+    User? user = _auth.currentUser; // Get the current user
+
+    if (user != null) {
+      // Retrieve the document using the user's ID as the document ID
+      DocumentSnapshot searchSnapshot = await _firestore
+          .collection('searches')
+          .doc(user.uid)
+          .get(); // Get the user's search document
+
+      if (searchSnapshot.exists) {
+        setState(() {
+          // Load the recent searches list from the document and reverse the order for recent first
+          _recentSearches = List<String>.from(searchSnapshot['recentSearches']).reversed.toList();
+        });
+      }
+    }
+  }
+
+  // Function to save the search query in Firebase
+  Future<void> _saveSearch(String query) async {
+    User? user = _auth.currentUser; // Get the current user
+
+    if (user != null && query.isNotEmpty) {
+      // Get the document reference for the user's searches
+      DocumentReference userSearchDoc = _firestore.collection('searches').doc(user.uid);
+
+      // Update the recent searches list by adding new search query
+      await userSearchDoc.set({
+        'recentSearches': FieldValue.arrayUnion([query]) // Add new query to the list
+      }, SetOptions(merge: true));
+
+      // Reload recent searches after saving the new one
+      _loadRecentSearches();
+    }
+  }
+
+  // Function to delete a search query from Firebase
+  Future<void> _deleteSearch(String query) async {
+    User? user = _auth.currentUser; // Get current user
+
+    if (user != null) {
+      // Get document reference for the user's searches
+      DocumentReference userSearchDoc = _firestore.collection('searches').doc(user.uid);
+
+      // Remove the search query from the list in Firebase
+      await userSearchDoc.update({
+        'recentSearches': FieldValue.arrayRemove([query])
+      });
+
+      // Clear the search field only if the deleted search is currently active in the search field
+      if (_searchController.text == query && _lastSelectedSearch != query) {
+        _searchController.clear();
+      }
+
+      // Reload the recent searches after one is deleted
+      _loadRecentSearches();
+    }
+  }
+
+  // Function that triggers when the user presses enter in the search field
+  void _onSearch() {
+    String searchQuery = _searchController.text.trim(); // Get search query from the input field
+
+    if (searchQuery.isNotEmpty) {
+      // Save the search query to Firebase
+      _saveSearch(searchQuery);
+
+      // After performing the search, execute the same logic as clicking the "X"
+      _navigateBack();
+    }
+  }
+
+  // Navigate back to the previous page (Explore page or previous tab)
+  void _navigateBack() {
+    MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+    if (mainScreenState != null) {
+      // Trigger navigation back to the previous index
+      mainScreenState.onItemTapped(widget.previousIndex);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +130,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              icon: const Icon(Icons.close, size: 32, color: Colors.black), // Same size as the search icon
+              icon: const Icon(Icons.close, size: 32, color: Colors.black),
               onPressed: () {
                 // Return to the previous tab using MainScreen's tab navigation
                 MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
@@ -59,7 +154,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
               controller: _searchController,
               decoration: const InputDecoration(
                 labelText: "Suche Kolleg*innen, Teams, Stichworte ...",
-                labelStyle: TextStyle(color: Color.fromARGB(255, 7, 110, 23)), // label in green
+                labelStyle: TextStyle(color: Color.fromARGB(255, 7, 110, 23)),
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(),
@@ -72,6 +167,9 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                 fontFamily: 'Futura',
                 fontSize: 16,
               ),
+              onSubmitted: (value) {
+                _onSearch(); // Trigger search logic when the Enter key is pressed
+              },
             ),
             const SizedBox(height: 16),
             // Display recent search title
@@ -87,14 +185,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
             // List of recent search items displayed in a scrollable ListView
             Expanded(
               child: ListView(
-                children: [
-                  _buildSearchItem('Maya Morena Grau'),
-                  _buildSearchItem('Joggen'),
-                  _buildSearchItem('Team Sustainability'),
-                  _buildSearchItem('Maya Morena Grau'),
-                  _buildSearchItem('Joggen'),
-                  _buildSearchItem('Team Sustainability'),
-                ],
+                children: _recentSearches.map((search) => _buildSearchItem(search)).toList(), // Display each search query
               ),
             ),
           ],
@@ -105,36 +196,53 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
   /// Builds an individual search item with a close icon
   Widget _buildSearchItem(String text) {
-    return Container(
-      height: 40,
-      margin: const EdgeInsets.symmetric(vertical: 1.0), // Reduced vertical margin for compact spacing
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(100, 220, 220, 220),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      alignment: Alignment.center,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and close icon
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontFamily: 'Futura',
-                color: Colors.grey,
+    return GestureDetector(
+      onTap: () {
+        _onPastSearchSelected(text); // Handle when a past search is tapped (restores it in the search field)
+      },
+      child: Container(
+        height: 40,
+        margin: const EdgeInsets.symmetric(vertical: 1.0),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(100, 220, 220, 220),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and close icon
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text(
+                text, // Display the search text
+                style: const TextStyle(
+                  fontFamily: 'Futura',
+                  color: Colors.grey,
+                ),
               ),
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(right: 16.0),
-            child: Icon(
-              Icons.close,
-              color: Colors.grey,
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.grey), // Close icon to delete the search
+              onPressed: () {
+                _deleteSearch(text); // Delete the search when the "X" is clicked
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  // Function to handle when a past search is selected
+  void _onPastSearchSelected(String query) {
+    setState(() {
+      _lastSelectedSearch = query; // Store selected search
+      _searchController.text = query; // Set tapped search term in the search field
+    });
+
+    // Remove query from the list of searches and re-add it as the newest search
+    _deleteSearch(query).then((_) {
+      _saveSearch(query); // Readd the search as the most recent
+    });
   }
 }
