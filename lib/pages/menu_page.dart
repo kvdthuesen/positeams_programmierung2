@@ -60,7 +60,7 @@ class _MenuPageState extends State<MenuPage> with AutomaticKeepAliveClientMixin 
                 title: Text('Wechseln zwischen Tag und Nacht', style: _contentStyle), // Text for the list item  - dark mode
                 trailing: SwitchTheme(
                   data: SwitchThemeData(
-                    thumbColor: WidgetStateProperty.all<Color>(greenThumbColor), // Switch thumb color - change general listVies design with SwitchThemeData
+                    thumbColor: WidgetStateProperty.all<Color>(greenThumbColor), // Switch thumb color
                     trackColor: WidgetStateProperty.all<Color>(lightGreenTrackColor), // Switch track color
                   ),
                   child: Switch(
@@ -90,9 +90,61 @@ Musterstraße 123
 Deutschland  
 Telefon: +49 123 456 789  
 E-Mail: datenschutz@positeams.de  
-Datenschutzbeauftragter: [Name des Datenschutzbeauftragten, falls vorhanden]
+Datenschutzbeauftragter: Max Mustermann
 
-...
+3. Erhebung und Verarbeitung personenbezogener Daten
+
+Wir erheben und verarbeiten personenbezogene Daten, wenn Sie unsere Plattform nutzen, insbesondere:
+
+- Bei der Registrierung: Name, E-Mail-Adresse, Telefonnummer, Profilbild
+- Bei der Nutzung der Plattform: Beiträge, Kommentare, Nachrichten
+- Bei der Kommunikation mit uns: Ihre Kontaktdaten und Inhalte Ihrer Anfragen
+
+4. Zwecke der Datenverarbeitung
+
+Wir verwenden Ihre personenbezogenen Daten für folgende Zwecke:
+
+- Bereitstellung und Verbesserung unserer Plattform
+- Kommunikation mit Ihnen
+- Bearbeitung von Anfragen und Anliegen
+- Gewährleistung der Sicherheit und Integrität unserer Plattform
+- Erfüllung gesetzlicher Verpflichtungen
+
+5. Rechtsgrundlagen der Verarbeitung
+
+Die Verarbeitung Ihrer personenbezogenen Daten erfolgt auf Grundlage der folgenden Rechtsgrundlagen:
+
+- Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)
+- Erfüllung eines Vertrages (Art. 6 Abs. 1 lit. b DSGVO)
+- Erfüllung rechtlicher Verpflichtungen (Art. 6 Abs. 1 lit. c DSGVO)
+- Wahrung unserer berechtigten Interessen (Art. 6 Abs. 1 lit. f DSGVO)
+
+6. Datenweitergabe an Dritte
+
+Ihre personenbezogenen Daten werden nur an Dritte weitergegeben, wenn dies zur Erfüllung eines Vertrages erforderlich ist, Sie eingewilligt haben oder wir gesetzlich dazu verpflichtet sind.
+
+7. Datenübermittlung in Drittstaaten
+
+Eine Übermittlung Ihrer personenbezogenen Daten in Drittstaaten erfolgt nur, wenn dies zur Durchführung des Vertrages erforderlich ist oder Sie ausdrücklich eingewilligt haben.
+
+8. Dauer der Datenspeicherung
+
+Wir speichern Ihre personenbezogenen Daten nur so lange, wie es für die genannten Zwecke erforderlich ist oder wie es gesetzliche Aufbewahrungsfristen vorsehen.
+
+9. Ihre Rechte
+
+Sie haben das Recht:
+
+- Auskunft über die zu Ihrer Person gespeicherten Daten zu erhalten
+- Berichtigung unrichtiger Daten zu verlangen
+- Löschung Ihrer personenbezogenen Daten zu verlangen
+- Einschränkung der Verarbeitung zu verlangen
+- Datenübertragbarkeit zu verlangen
+- Widerspruch gegen die Verarbeitung Ihrer personenbezogenen Daten einzulegen
+
+10. Sicherheit Ihrer Daten
+
+Wir treffen angemessene technische und organisatorische Maßnahmen, um Ihre personenbezogenen Daten vor unbefugtem Zugriff, Verlust oder Missbrauch zu schützen.
 
 11. Kontakt
 
@@ -123,7 +175,29 @@ Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der intern
 
 PosiTeams bietet eine Plattform für die interne Kommunikation und den Austausch von Informationen innerhalb des Unternehmens. Die Nutzung der Plattform erfolgt gemäß diesen AGB und den geltenden gesetzlichen Bestimmungen.
 
-...
+3. Registrierungs- und Nutzung
+
+Um PosiTeams nutzen zu können, müssen Sie sich registrieren. Bei der Registrierung sind Sie verpflichtet, wahrheitsgemäße und vollständige Angaben zu machen. Ihre Zugangsdaten sind geheim zu halten, und Sie sind verantwortlich für alle Aktivitäten, die unter Ihrem Konto stattfinden.
+
+4. Nutzungsrechte
+
+Mit der Nutzung von PosiTeams erhalten Sie ein nicht übertragbares, widerrufliches Recht, die Plattform gemäß diesen AGB zu nutzen. Alle Rechte, die Ihnen nicht ausdrücklich gewährt werden, bleiben uns vorbehalten.
+
+5. Inhalte der Nutzer
+
+Die Nutzer sind für die von ihnen veröffentlichten Inhalte verantwortlich. Sie dürfen keine rechtswidrigen, beleidigenden oder diskriminierenden Inhalte veröffentlichen. PosiTeams behält sich das Recht vor, Inhalte zu entfernen, die gegen diese Regelung verstoßen.
+
+6. Haftung
+
+Die Nutzung von PosiTeams erfolgt auf eigene Gefahr. PosiTeams haftet nicht für Schäden, die durch die Nutzung oder Nichtnutzung der bereitgestellten Informationen entstehen, es sei denn, diese beruhen auf vorsätzlicher oder grob fahrlässiger Pflichtverletzung.
+
+7. Änderungen der AGB
+
+PosiTeams behält sich das Recht vor, diese AGB jederzeit zu ändern. Änderungen werden Ihnen rechtzeitig bekannt gegeben. Mit der weiteren Nutzung der Plattform akzeptieren Sie die geänderten AGB.
+
+8. Kündigung
+
+Jeder Nutzer kann sein Konto jederzeit kündigen. PosiTeams behält sich das Recht vor, Nutzerkonten bei Verstößen gegen diese AGB fristlos zu kündigen.
 
 9. Schlussbestimmungen
 

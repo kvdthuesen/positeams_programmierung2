@@ -6,7 +6,6 @@ class PostService {
 
   /// Fetch posts stream with filtering and sorting based on the user's profile data.
   /// This method streams posts while applying filters based on the user's company, team, or department.
-  ///
   /// [selectedFilterOption] - Specifies if the filtering is based on 'Firma', 'Team', or 'Abteilung'.
   /// [selectedSortOption] - Defines whether the posts should be sorted by 'Neuste' or 'Älteste'.
   Stream<QuerySnapshot> getPostsStream({
@@ -62,7 +61,7 @@ class PostService {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return; // Exit if no user is logged in
 
-    // Query the 'posts' collection filtered by the current user's ID (userId)
+    // Query the 'posts' collection filtered by the current userId
     Query query = _firestore.collection('posts').where('userId', isEqualTo: user.uid);
 
     // Return a stream of the user's posts

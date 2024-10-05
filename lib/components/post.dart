@@ -8,7 +8,7 @@ class Post extends StatelessWidget {
   final String departmentId;
   final String contentText;
   final String contentImage;
-  final String profileImage;  // New field for profile image URL
+  final String profileImage;
 
   const Post({
     super.key,
@@ -17,7 +17,7 @@ class Post extends StatelessWidget {
     required this.departmentId,
     required this.contentText,
     required this.contentImage,
-    required this.profileImage,  // Add this to the constructor
+    required this.profileImage,
   });
 
   @override
@@ -110,7 +110,7 @@ class Post extends StatelessWidget {
                         InteractionButton(icon: Icons.thumb_up_alt_outlined, label: 'Gefällt mir!'),
                         InteractionButton(icon: Icons.favorite_border, label: 'Liebe'),
                         InteractionButton(icon: Icons.emoji_emotions_outlined, label: 'Applaus'),
-                        ChatButton(),  // Custom chat button with placeholder functionality
+                        ChatButton(),  // Custom chat button with placeholder functionality - Mockup
                       ],
                     ),
                   ],
@@ -158,7 +158,7 @@ class Post extends StatelessWidget {
   }
 }
 
-/// Widget for displaying interaction buttons (e.g., "Like", "Love", "Applause").
+/// Widget for displaying interaction buttons ( "Like", "Love", "Applause").
 /// StatelessWidget is suitable here as the button doesn't need dynamic state management.
 class InteractionButton extends StatelessWidget {
   final IconData icon;
@@ -171,12 +171,12 @@ class InteractionButton extends StatelessWidget {
     return Column(
       children: [
         IconButton(
-          icon: Icon(icon),  // Interaction icon (e.g., Like, Love)
+          icon: Icon(icon),  // Interaction icon
           onPressed: () {},  // Placeholder for functionality
         ),
         const SizedBox(height: 2),  // Space between icon and label
         Text(
-          label,  // Interaction label (e.g., "Gefällt mir!")
+          label,  // Interaction label
           style: const TextStyle(
             color: Colors.grey,
             fontFamily: 'Futura Condensed',
@@ -220,7 +220,7 @@ class ChatButton extends StatelessWidget {
         ),
         const SizedBox(height: 2),  // Space between button and label
         const Text(
-          'Talk in Teams',  // Label indicating integration with a chat platform
+          'Talk in Teams',  // Mockup: Button indicating integration with a chat platform
           style: TextStyle(
             color: Colors.grey,
             fontFamily: 'Futura Condensed',

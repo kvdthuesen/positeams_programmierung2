@@ -28,22 +28,22 @@ class PostListWidget extends StatelessWidget {
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Center(child: Text('Error loading posts'));
+          return const Center(child: Text('Fehler beim Laden von Beiträgen')); // Error handling for loading posts
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator()); // Loading state indicator
         }
 
-        final posts = snapshot.data?.docs ?? [];
+        final posts = snapshot.data?.docs ?? []; // Retrieve posts or empty list if null
 
         if (posts.isEmpty) {
-          return const Center(child: Text('No posts available.'));
+          return const Center(child: Text('Keine Beiträge vorhanden')); // Message for no posts
         }
 
         return ListView.builder(
           itemCount: posts.length,
           itemBuilder: (context, index) {
-            final post = posts[index].data() as Map<String, dynamic>;
+            final post = posts[index].data() as Map<String, dynamic>; // Cast post data
 
             return Post(
               firstName: post['firstName'] ?? 'Unknown',

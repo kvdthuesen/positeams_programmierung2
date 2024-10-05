@@ -49,7 +49,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         _companyId = userDoc['companyId'];
         _teamId = userDoc['teamId'];
         _departmentId = userDoc['departmentId'];
-        _profileImage = userDoc['profileImage']; // Fetch profile image URL
+        _profileImage = userDoc['profileImage'];
       });
     }
   }
@@ -129,7 +129,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       showBottomBorder: true, // divider
     );
   }
-// Function to save the post in Firestore
+
 // Function to save the post in Firestore
   Future<void> _savePost() async {
     // Validate input before saving the post

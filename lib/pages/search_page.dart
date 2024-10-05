@@ -242,7 +242,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
     // Remove query from the list of searches and re-add it as the newest search
     _deleteSearch(query).then((_) {
-      _saveSearch(query); // Readd the search as the most recent
+      _saveSearch(query); // Read the search as the most recent
     });
   }
 }

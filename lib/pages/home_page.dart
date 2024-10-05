@@ -29,7 +29,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
   @override
   void initState() {
     super.initState();
-    _loadUserProfile(); // Load the user profile data when the widget initializes
+    _loadUserProfile(); // Load user profile data when the widget initializes
   }
 
   // Fetch the user's profile from Firestore
