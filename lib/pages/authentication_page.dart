@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';  // Firebase Auth import for user authentication
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 import 'package:positeams_programmierung2/pages/registration_page.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';

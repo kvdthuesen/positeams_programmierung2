@@ -5,7 +5,7 @@ import 'package:positeams_programmierung2/pages/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:positeams_programmierung2/components/profileheader.dart';
-import 'package:positeams_programmierung2/components/post_service.dart'; // Import the PostService
+import 'package:positeams_programmierung2/components/post_service.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});

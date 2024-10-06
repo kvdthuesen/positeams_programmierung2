@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // For current user authentication
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:positeams_programmierung2/components/post.dart';
 import 'package:positeams_programmierung2/components/appbar.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
-import 'package:positeams_programmierung2/components/authentication_check.dart'; // Import for authentication check
+import 'package:positeams_programmierung2/components/authentication_check.dart';
 
 /// Explore page displaying a list of posts.
 class Explore extends StatefulWidget {

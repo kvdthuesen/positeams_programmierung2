@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart'; // Import flutter material
-import 'package:positeams_programmierung2/components/appbar.dart'; // Import Appbar component
-import 'package:positeams_programmierung2/pages/main_screen.dart'; // Import MainScreen
+import 'package:flutter/material.dart';
+import 'package:positeams_programmierung2/components/appbar.dart';
+import 'package:positeams_programmierung2/pages/main_screen.dart';
 import 'package:positeams_programmierung2/components/profileheader.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
