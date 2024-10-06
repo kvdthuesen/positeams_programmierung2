@@ -94,7 +94,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  // Function that triggers when the user presses enter in the search field
+// Function that triggers when the user presses enter in the search field or clicks the search icon
   void _onSearch() {
     String searchQuery = _searchController.text.trim(); // Get search query from the input field
 
@@ -102,15 +102,33 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
       // Save the search query to Firebase
       _saveSearch(searchQuery);
 
-      // After performing the search, execute the same logic as clicking the "X"
-      _navigateBack();
+      // Call the method to update the search query in MainScreen
+      MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+      if (mainScreenState != null) {
+        mainScreenState.updateSearchQuery(searchQuery); // Pass the search query to MainScreen
+      }
+    } else {
+      // Set the search query to null if the input is empty
+      MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+      if (mainScreenState != null) {
+        mainScreenState.updateSearchQuery(''); // Pass an empty string or null to reset the search
+      }
     }
+
+    // Clear the search field after the search is performed
+    _searchController.clear();
+
+    // After performing the search or reset, navigate back to the previous tab (Explore page)
+    _navigateBack();
   }
 
   // Navigate back to the previous page (Explore page or previous tab)
-  void _navigateBack() {
+  void _navigateBack() async {
     MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
     if (mainScreenState != null) {
+      // Introduce a short delay to give Explore page time to load
+      await Future.delayed(const Duration(milliseconds: 150));
+
       // Trigger navigation back to the previous index
       mainScreenState.onItemTapped(widget.previousIndex);
     }
@@ -152,16 +170,22 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
             // Search input field
             TextField(
               controller: _searchController,
-              decoration: const InputDecoration(
+              maxLength: 25,
+              decoration: InputDecoration(
                 labelText: "Suche Kolleg*innen, Teams, Stichworte ...",
-                labelStyle: TextStyle(color: Color.fromARGB(255, 7, 110, 23)),
+                labelStyle: const TextStyle(color: Color.fromARGB(255, 7, 110, 23)),
                 fillColor: Colors.white,
                 filled: true,
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
+                border: const OutlineInputBorder(),
+                focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Color.fromARGB(255, 7, 110, 23)), // frame in green in focus
                 ),
-                prefixIcon: Icon(Icons.search, color: Colors.black, size: 32), // Search-Icon
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search, color: Colors.black, size: 32), // Search-Icon now on the right
+                  onPressed: () {
+                    _onSearch(); // Trigger search when the search icon is pressed
+                  },
+                ),
               ),
               style: const TextStyle(
                 fontFamily: 'Futura',
@@ -173,15 +197,18 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
             ),
             const SizedBox(height: 16),
             // Display recent search title
-            const Text(
-              'Zuletzt Gesucht',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'Futura',
-                color: Colors.grey,
+            // Only show "Zuletzt Gesucht" if there are recent searches
+            if (_recentSearches.isNotEmpty) ...[
+              const Text(
+                'Zuletzt Gesucht',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Futura',
+                  color: Colors.grey,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
+            ],
             // List of recent search items displayed in a scrollable ListView
             Expanded(
               child: ListView(

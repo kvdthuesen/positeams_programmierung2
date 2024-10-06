@@ -20,6 +20,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   late int _previousIndex;
+  String _searchQuery = ''; // Local variable to store the current search query
 
   @override
   void initState() {
@@ -32,19 +33,30 @@ class MainScreenState extends State<MainScreen> {
   // Getter for current selected index
   int get currentIndex => _selectedIndex;
 
+  // Method to update the search query from the Search page
+  void updateSearchQuery(String query) {
+    setState(() {
+      _searchQuery = query; // Update the local search query when called
+    });
+  }
+
   // List of pages for navigation, including the SearchPage
   final List<Widget> _pages = [
     const Homepage(),
-    const Explore(),
+    const Explore(), // Explore page will receive the search query later
     const AddPost(previousIndex: 0), // Pass previous index dynamically
     const MyProfile(),
     const Search(), // SearchPage as an additional page
     const MenuPage(),
   ];
 
-  // Function to handle tab selection
+// Function to handle tab selection
   void onItemTapped(int index) {
     setState(() {
+      if (index == 1 && _selectedIndex == 1) {
+        // If Explore is already selected and tapped again, clear the search query
+        _searchQuery = ''; // Reset search query
+      }
       _previousIndex = _selectedIndex; // Store current index before switching
       _selectedIndex = index;
     });
@@ -59,6 +71,10 @@ class MainScreenState extends State<MainScreen> {
           // Special handling for AddPost to pass the previous index
           if (page is AddPost) {
             return AddPost(previousIndex: _previousIndex); // Pass correct previous index
+          }
+          // Pass the search query to the Explore page
+          if (page is Explore) {
+            return Explore(searchQuery: _searchQuery); // Pass search query dynamically
           }
           return page;
         }).toList(),

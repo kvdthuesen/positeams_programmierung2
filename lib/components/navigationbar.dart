@@ -2,26 +2,24 @@ import 'package:flutter/material.dart';
 
 class MyNavigationBar extends StatelessWidget {
   final int currentIndex;
-  final ValueChanged<int> onTap;  // Callback for tab changes
+  final ValueChanged<int> onTap;
 
-  // Define colors and icon size for selected and unselected items
-  final Color selectedColor = Colors.black; // Color for the selected icon
-  final Color unselectedColor = Colors.grey; // Color for unselected icons
-  final Color backgroundColor = Colors.white; // Background color of the navigation bar
-  final double iconSize = 32.0; // Size of the icons
+  final Color selectedColor = Colors.black;
+  final Color unselectedColor = Colors.grey;
+  final double iconSize = 32.0;
 
   const MyNavigationBar({
     super.key,
     required this.currentIndex,
-    required this.onTap,  // Require the callback for navigation
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,  // Set the desired height of the NavigationBar here
-      decoration: BoxDecoration(
-        color: backgroundColor,  // Set background color for the container
+      height: 80,
+      decoration: const BoxDecoration(
+        color: Colors.white, // Background color for the entire navigation bar
       ),
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
@@ -38,25 +36,13 @@ class MyNavigationBar extends StatelessWidget {
           ),
         ),
         child: NavigationBar(
-          selectedIndex: currentIndex,  // The currently active tab index
-          onDestinationSelected: onTap,  // Forward the onTap callback from MainScreen
+          selectedIndex: currentIndex,
+          onDestinationSelected: onTap,
           destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home),  // Icon for Home tab
-              label: '',  // No label text
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.search),  // Icon for Explore/Search tab
-              label: '',  // No label text
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.add),  // Icon for Add Post tab
-              label: '',  // No label text
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person),  // Icon for Profile tab
-              label: '',  // No label text
-            ),
+            NavigationDestination(icon: Icon(Icons.home), label: ''), // Home
+            NavigationDestination(icon: Icon(Icons.search), label: ''), // Explore
+            NavigationDestination(icon: Icon(Icons.add), label: ''), // AddPost
+            NavigationDestination(icon: Icon(Icons.person), label: ''),// MyProfile
           ],
         ),
       ),

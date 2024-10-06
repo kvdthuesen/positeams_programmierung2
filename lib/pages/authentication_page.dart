@@ -5,7 +5,6 @@ import 'package:positeams_programmierung2/pages/registration_page.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
 
 /// The AuthPage handles user login via Firebase Authentication.
-/// If the login is successful, it navigates to the MainScreen.
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
 
@@ -14,9 +13,9 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  final TextEditingController _emailController = TextEditingController();  // Controller to handle email input
-  final TextEditingController _passwordController = TextEditingController();  // Controller to handle password input
-  bool _isLoading = false; // Variable to track the loading state
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   /// Handles the login process using Firebase Authentication.
   /// If the login is successful, navigates to the MainScreen.
@@ -51,43 +50,42 @@ class _AuthPageState extends State<AuthPage> {
         MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     } on FirebaseAuthException catch (e) {
-      if (!mounted) return; // Ensure the widget is still mounted before using context
+      if (!mounted) return;
 
-      // Handle specific Firebase Authentication errors
-      if (e.code == 'user-not-found') {
-        // No user found with the provided email
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kein Nutzer mit dieser E-Mail gefunden.')),
-        );
-      } else if (e.code == 'wrong-password') {
-        // Incorrect password
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Falsches Passwort.')),
-        );
-      } else if (e.code == 'invalid-email') {
-        // Invalid email format
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ungültige E-Mail-Adresse.')),
-        );
-      } else if (e.code == 'user-disabled') {
-        // User account disabled
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dieses Konto wurde deaktiviert.')),
-        );
-      } else if (e.code == 'too-many-requests') {
-        // Too many failed login attempts
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Zu viele fehlgeschlagene Anmeldeversuche. Versuchen Sie es später erneut.')),
-        );
-      } else {
-        // Generic error message for any other authentication errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler bei der Anmeldung: ${e.message}')),
-        );
+      // Handle Firebase Authentication errors
+      switch (e.code) {
+        case 'user-not-found':
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Kein Nutzer mit dieser E-Mail gefunden.')),
+          );
+          break;
+        case 'wrong-password':
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Falsches Passwort.')),
+          );
+          break;
+        case 'invalid-email':
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Ungültige E-Mail-Adresse.')),
+          );
+          break;
+        case 'user-disabled':
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Dieses Konto wurde deaktiviert.')),
+          );
+          break;
+        case 'too-many-requests':
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Zu viele fehlgeschlagene Anmeldeversuche. Versuchen Sie es später erneut.')),
+          );
+          break;
+        default:
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Fehler bei der Anmeldung: ${e.message}')),
+          );
       }
     } finally {
       if (mounted) {
-        // Stop loading after login attempt only if still mounted
         setState(() {
           _isLoading = false;
         });
@@ -151,7 +149,7 @@ class _AuthPageState extends State<AuthPage> {
             if (_isLoading) ...[
               const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 7, 110, 23)), // Green color
+                  valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 7, 110, 23)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -171,7 +169,7 @@ class _AuthPageState extends State<AuthPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _login,  // Calls the _login function when pressed
+                      onPressed: _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 7, 110, 23),
                         padding: const EdgeInsets.symmetric(vertical: 14),

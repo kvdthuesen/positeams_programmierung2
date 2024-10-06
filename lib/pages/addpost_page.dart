@@ -25,6 +25,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
   String? _selectedShareOption;
   String? _imageUrl;
   String? _firstName; // Stores the first name of the current user
+  String? _lastName; // Stores the last name of the current user
   String? _companyId; // Stores the company ID of the current user
   String? _teamId; // Stores the team ID of the current user
   String? _departmentId; // Stores the department ID of the current user
@@ -46,6 +47,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       setState(() {
         // Update the state with user data retrieved from Firestore
         _firstName = userDoc['firstName'];
+        _lastName = userDoc['lastName'];
         _companyId = userDoc['companyId'];
         _teamId = userDoc['teamId'];
         _departmentId = userDoc['departmentId'];
@@ -150,6 +152,21 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
         final profileImageUrl = userDoc['profileImage'] ?? ''; // Fetch profile image URL
 
+        // Function to clean and tokenize content for searchability
+        List<String> _generateSearchableContent(String contentText) {
+          // Combine all relevant fields
+          String combinedText = "$contentText ${_firstName ?? ''} ${_lastName ?? ''} ${_teamId ?? ''} ${_departmentId ?? ''}";
+
+          // Remove punctuation and make everything lowercase
+          combinedText = combinedText.replaceAll(RegExp(r'[^\w\s]'), '').toLowerCase();
+
+          // Split into words
+          return combinedText.split(' ').where((word) => word.isNotEmpty).toList();
+        }
+
+        // Generate searchable content array
+        List<String> searchableContent = _generateSearchableContent(_textController.text);
+
         // Add the post to Firestore
         await FirebaseFirestore.instance.collection('posts').add({
           'userId': userId, // Save the authenticated user's ID
@@ -160,8 +177,10 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
           'teamId': _teamId ?? 'Unknown', // Save team ID
           'departmentId': _departmentId ?? 'Unknown', // Save department ID
           'firstName': _firstName ?? 'Unknown', // Save user's first name
+          'lastName': _lastName ?? 'Unknown', // Save user's last name
           'profileImage': profileImageUrl, // Save user's profile image URL
           'visibility': _selectedShareOption, // Save visibility option
+          'searchableContent': searchableContent, // Save the searchable content array
         });
 
         if (!mounted) return; // Ensures the context is still valid before using it
@@ -179,7 +198,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         // Navigation to myprofile_page after posting
         MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
         if (mainScreenState != null) {
-          mainScreenState.onItemTapped(3); // change to Profile-Tab (Index 3)
+          mainScreenState.onItemTapped(3); // Change to Profile-Tab (Index 3)
         }
       }
     } catch (e) {
