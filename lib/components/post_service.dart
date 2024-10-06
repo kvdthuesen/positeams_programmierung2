@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:positeams_programmierung2/components/authentication_check.dart';
 
 class PostService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -11,7 +13,11 @@ class PostService {
   Stream<QuerySnapshot> getPostsStream({
     required String selectedFilterOption,
     required String selectedSortOption,
+    required BuildContext context, // Added context for authentication check
   }) async* {
+    // Check if the user is authenticated
+    await checkAuthentication(context);
+
     // Retrieve the current authenticated user
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return; // Exit if no user is logged in
@@ -56,7 +62,10 @@ class PostService {
   }
 
   /// Fetch posts stream specifically for the current authenticated user based on userId.
-  Stream<QuerySnapshot> getUserPostsStream() async* {
+  Stream<QuerySnapshot> getUserPostsStream(BuildContext context) async* {
+    // Check if the user is authenticated
+    await checkAuthentication(context);
+
     // Retrieve the current authenticated user
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return; // Exit if no user is logged in
@@ -73,8 +82,12 @@ class PostService {
   }
 
   /// Fetch all posts stream without filtering by userId, used for loading all posts.
-  Stream<QuerySnapshot> getAllPostsStream() async* {
-    Query query = _firestore.collection('posts'); // Get all posts
+  Stream<QuerySnapshot> getAllPostsStream(BuildContext context) async* {
+    // Check if the user is authenticated
+    await checkAuthentication(context);
+
+    // Query all posts
+    Query query = _firestore.collection('posts');
 
     // Return a stream of all posts
     try {

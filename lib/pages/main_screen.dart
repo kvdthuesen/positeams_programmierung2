@@ -9,9 +9,9 @@ import 'package:positeams_programmierung2/pages/search_page.dart';
 import 'menu_page.dart';
 
 class MainScreen extends StatefulWidget {
-  final int selectedIndex; // Parameter to set the selected tab index
+  final int selectedIndex;
 
-  const MainScreen({super.key, this.selectedIndex = 0}); // Default index is 0 (Home)
+  const MainScreen({super.key, this.selectedIndex = 0});
 
   @override
   MainScreenState createState() => MainScreenState();
@@ -20,12 +20,11 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   late int _previousIndex;
-  String _searchQuery = ''; // Local variable to store the current search query
+  String _searchQuery = ''; // Stores the current search query
 
   @override
   void initState() {
     super.initState();
-    // Set the initial index and previous index
     _selectedIndex = widget.selectedIndex;
     _previousIndex = _selectedIndex;
   }
@@ -33,31 +32,31 @@ class MainScreenState extends State<MainScreen> {
   // Getter for current selected index
   int get currentIndex => _selectedIndex;
 
-  // Method to update the search query from the Search page
+  // Updates the search query from the Search page
   void updateSearchQuery(String query) {
     setState(() {
-      _searchQuery = query; // Update the local search query when called
+      _searchQuery = query;
     });
   }
 
-  // List of pages for navigation, including the SearchPage
+  // List of pages for navigation
   final List<Widget> _pages = [
     const Homepage(),
-    const Explore(), // Explore page will receive the search query later
-    const AddPost(previousIndex: 0), // Pass previous index dynamically
+    const Explore(),
+    const AddPost(previousIndex: 0),
     const MyProfile(),
-    const Search(), // SearchPage as an additional page
+    const Search(),
     const MenuPage(),
   ];
 
-// Function to handle tab selection
+  // Handles tab selection
   void onItemTapped(int index) {
     setState(() {
       if (index == 1 && _selectedIndex == 1) {
         // If Explore is already selected and tapped again, clear the search query
         _searchQuery = ''; // Reset search query
       }
-      _previousIndex = _selectedIndex; // Store current index before switching
+      _previousIndex = _selectedIndex;
       _selectedIndex = index;
     });
   }
@@ -70,16 +69,15 @@ class MainScreenState extends State<MainScreen> {
         children: _pages.map((page) {
           // Special handling for AddPost to pass the previous index
           if (page is AddPost) {
-            return AddPost(previousIndex: _previousIndex); // Pass correct previous index
+            return AddPost(previousIndex: _previousIndex);
           }
-          // Pass the search query to the Explore page
           if (page is Explore) {
-            return Explore(searchQuery: _searchQuery); // Pass search query dynamically
+            return Explore(searchQuery: _searchQuery);
           }
           return page;
         }).toList(),
       ),
-      // Hide the BottomNavigationBar on AddPost (index 2) and Search (index 4)
+      // Hide the BottomNavigationBar on AddPost, Search, and Menu pages
       bottomNavigationBar: (_selectedIndex == 2 || _selectedIndex == 4 || _selectedIndex == 5)
           ? null
           : MyNavigationBar(

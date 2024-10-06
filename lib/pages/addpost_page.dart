@@ -1,11 +1,13 @@
 import 'package:positeams_programmierung2/components/appbar.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
+
 
 class AddPost extends StatefulWidget {
   final int previousIndex; // Stores the index of the previous page (to return after closing)
@@ -153,7 +155,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         final profileImageUrl = userDoc['profileImage'] ?? ''; // Fetch profile image URL
 
         // Function to clean and tokenize content for searchability
-        List<String> _generateSearchableContent(String contentText) {
+        List<String> generateSearchableContent(String contentText) {
           // Combine all relevant fields
           String combinedText = "$contentText ${_firstName ?? ''} ${_lastName ?? ''} ${_teamId ?? ''} ${_departmentId ?? ''}";
 
@@ -165,7 +167,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         }
 
         // Generate searchable content array
-        List<String> searchableContent = _generateSearchableContent(_textController.text);
+        List<String> searchableContent = generateSearchableContent(_textController.text);
 
         // Add the post to Firestore
         await FirebaseFirestore.instance.collection('posts').add({
@@ -181,6 +183,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
           'profileImage': profileImageUrl, // Save user's profile image URL
           'visibility': _selectedShareOption, // Save visibility option
           'searchableContent': searchableContent, // Save the searchable content array
+          'randomFactor': Random().nextInt(100000), // Add random factor between 0 and 100,000
         });
 
         if (!mounted) return; // Ensures the context is still valid before using it

@@ -59,7 +59,7 @@ class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
       return FirebaseFirestore.instance
           .collection('posts')
           .where('companyId', isEqualTo: _userCompanyId) // Filter posts by the user's company
-          .orderBy('createdAt', descending: true)
+          .orderBy('randomFactor', descending: true)
           .snapshots()
           .map((snapshot) => snapshot.docs); // Return the documents from the snapshot
     } else {

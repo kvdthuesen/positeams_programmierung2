@@ -59,12 +59,12 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   /// Fetches the posts stream based on the selected button
-  Stream<QuerySnapshot> _getPostsStream() {
+  Stream<QuerySnapshot> _getPostsStream(BuildContext context) {
     // Check which button is selected and return the corresponding stream
     if (_selectedButton == 'Beiträge') {
-      return PostService().getUserPostsStream(); // Fetch posts by current userId
+      return PostService().getUserPostsStream(context); // Fetch posts by current userId
     } else {
-      return PostService().getAllPostsStream(); // Fetch all posts
+      return PostService().getAllPostsStream(context); // Fetch all posts
     }
   }
 
@@ -198,7 +198,7 @@ class _MyProfileState extends State<MyProfile> {
             delegate: SliverChildListDelegate(
               [
                 StreamBuilder<QuerySnapshot>(
-                  stream: _getPostsStream(),
+                  stream: _getPostsStream(context),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return const Text('Error loading posts');

@@ -25,6 +25,7 @@ class PostListWidget extends StatelessWidget {
       stream: PostService().getPostsStream(
         selectedFilterOption: selectedFilterOption,
         selectedSortOption: selectedSortOption,
+        context: context,  // Pass the context to check authentication
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
