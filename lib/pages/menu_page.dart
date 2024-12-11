@@ -80,8 +80,8 @@ class _MenuPageState extends State<MenuPage> with AutomaticKeepAliveClientMixin 
                 title: Text('Wechseln zwischen Tag und Nacht', style: _contentStyle), // Text for the list item  - dark mode
                 trailing: SwitchTheme(
                   data: SwitchThemeData(
-                    thumbColor: MaterialStateProperty.all<Color>(greenThumbColor), // Switch thumb color
-                    trackColor: MaterialStateProperty.all<Color>(lightGreenTrackColor), // Switch track color
+                    thumbColor: WidgetStateProperty.all<Color>(greenThumbColor), // Switch thumb color
+                    trackColor: WidgetStateProperty.all<Color>(lightGreenTrackColor), // Switch track color
                   ),
                   child: Switch(
                     value: false, // Initial value of the switch
