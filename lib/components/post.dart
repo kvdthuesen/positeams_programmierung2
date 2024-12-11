@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:positeams_programmierung2/components/post_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Main widget for displaying a post with user info, post content, image preview, and interaction buttons.
 /// StatefulWidget is appropriate here for dynamic state management.
@@ -13,6 +14,7 @@ class Post extends StatefulWidget {
   final String contentText;
   final String contentImage;
   final String profileImage;
+  final String creatorEmail;
   final int thumbUpCount; // New: Counter for "ThumbUp" reactions
   final int favoriteCount; // New: Counter for "Favorite" reactions
   final int emotionCount; // New: Counter for "Emotion" reactions
@@ -26,6 +28,7 @@ class Post extends StatefulWidget {
     required this.contentText,
     required this.contentImage,
     required this.profileImage,
+    required this.creatorEmail,
     required this.thumbUpCount, // Pass thumbUpCount dynamically
     required this.favoriteCount, // Pass favoriteCount dynamically
     required this.emotionCount, // Pass emotionCount dynamically
@@ -190,7 +193,9 @@ class _PostState extends State<Post> {
                           isActive: activeReactionType == 'Emotion',
                           onToggled: _onReactionToggled,
                         ),
-                        const ChatButton(),
+                        ChatButton(
+                          creatorEmail: widget.creatorEmail, // Email dynamisch übergeben
+                        ),
                       ],
                     ),
                   ],
@@ -334,14 +339,34 @@ IconData _getFilledIcon(IconData icon) {
 
 /// Custom button for initiating a chat.
 class ChatButton extends StatelessWidget {
-  const ChatButton({super.key});
+  final String creatorEmail; // Email des Beitragserstellers
+
+  const ChatButton({super.key, required this.creatorEmail});
+
+  /// Öffnet Microsoft Teams mit einem neuen Chat an die übergebene E-Mail-Adresse.
+  Future<void> _openTeams(String email) async {
+    final teamsUrl = 'https://teams.microsoft.com/l/chat/0/0?users=$email';
+    if (await canLaunch(teamsUrl)) {
+      await launch(teamsUrl);
+    } else {
+      throw Exception('Konnte Teams nicht öffnen.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () async {
+            try {
+              await _openTeams(creatorEmail);
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Fehler: $e')),
+              );
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 7, 110, 23),
             shape: const RoundedRectangleBorder(

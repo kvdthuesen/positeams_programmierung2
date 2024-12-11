@@ -133,6 +133,7 @@ class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
                 contentText: post['contentText'] ?? 'No content', // Dynamically display post text
                 contentImage: post['contentImage'] ?? '', // Dynamically display post image
                 profileImage: post['profileImage'] ?? '', // Dynamically display profileImage
+                creatorEmail: post['creatorEmail'] ?? '',
                 thumbUpCount: post['ThumbUpCounter'] ?? 0, // Dynamically load ThumbUpCounter
                 favoriteCount: post['FavoriteCounter'] ?? 0, // Dynamically load FavoriteCounter
                 emotionCount: post['EmotionCounter'] ?? 0, // Dynamically load EmotionCounter

@@ -32,6 +32,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
   String? _teamId; // Stores the team ID of the current user
   String? _departmentId; // Stores the department ID of the current user
   String? _profileImage; // Stores the URL of the user's profile image
+  String? _creatorEmail; // Stores the email of the current user
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
         _teamId = userDoc['teamId'];
         _departmentId = userDoc['departmentId'];
         _profileImage = userDoc['profileImage'];
+        _creatorEmail = userDoc['email'];
       });
     }
   }
@@ -136,6 +138,8 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
 
 // Function to save the post in Firestore
   Future<void> _savePost() async {
+    // Minimize the keyboard
+    FocusScope.of(context).unfocus();
     // Validate input before saving the post
     if (_textController.text.isEmpty || _selectedShareOption == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -176,6 +180,7 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
           'contentText': _textController.text, // Save post content
           'contentImage': _imageUrl ?? '', // Save image URL if available
           'createdAt': FieldValue.serverTimestamp(), // Save timestamp
+          'creatorEmail': _creatorEmail ?? 'Unknown',
           'teamId': _teamId ?? 'Unknown', // Save team ID
           'departmentId': _departmentId ?? 'Unknown', // Save department ID
           'firstName': _firstName ?? 'Unknown', // Save user's first name

@@ -73,7 +73,10 @@ class PostService {
     if (user == null) return; // Exit if no user is logged in
 
     // Query the 'posts' collection filtered by the current userId
-    Query query = _firestore.collection('posts').where('userId', isEqualTo: user.uid);
+    Query query = _firestore
+        .collection('posts')
+        .where('userId', isEqualTo: user.uid)
+        .orderBy('createdAt', descending: true);
 
     // Return a stream of the user's posts
     try {

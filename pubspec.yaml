@@ -40,7 +40,7 @@ dependencies:
   firebase_auth: ^5.3.0
   image_picker: ^1.1.2
   firebase_storage: ^12.3.1
-  badges: ^2.0.3
+  url_launcher: ^6.0.20
   flutter_launcher_icons: ^0.9.2
 
 flutter_icons:
