@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
+import 'package:positeams_programmierung2/pages/authentication_page.dart';
+import 'package:positeams_programmierung2/components/editProfile_page.dart'; // Import für die neue Profilseite
 import 'package:positeams_programmierung2/components/appbar.dart';
 
 // Defines custom colors
@@ -20,6 +23,18 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; // Ensures the page state is preserved
+
+  // Logout function that signs the user out and navigates to the authentication page
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut(); // Signs out the user
+    if (!mounted) return; // Checks if widget is mounted
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const AuthPage()), // Navigates to AuthPage
+          (Route<dynamic> route) => false, // Removes all previous routes
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +63,12 @@ class _MenuPageState extends State<MenuPage> with AutomaticKeepAliveClientMixin 
             _buildMenuItem(Icons.settings, 'Kontoeinstellungen', [ // Menu item for account settings
               ListTile(
                 title: Text('Passwort oder Namen ändern', style: _contentStyle), // Text for the list item - account settings
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditProfilePage()),
+                  ); // Navigate to EditProfilePage
+                },
               ),
               ListTile(
                 title: Text('Profilbild oder Titelbild ändern', style: _contentStyle), // Text for the list item - profile images
@@ -217,12 +237,12 @@ E-Mail: support@positeams.de
               ),
             ]),
             _buildMenuItem(Icons.logout, 'Abmelden', [ // Menu item for Sign Out
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
+              ListTile(
+                title: Text(
                   'Von Deinem Konto abmelden.', // Text for the list item
                   style: _contentStyle, // text style
                 ),
+                onTap: _logout, // Calls the logout function
               ),
             ]),
           ],
