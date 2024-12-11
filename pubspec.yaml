@@ -40,6 +40,7 @@ dependencies:
   firebase_auth: ^5.3.0
   image_picker: ^1.1.2
   firebase_storage: ^12.3.1
+  badges: ^2.0.3
 
 dev_dependencies:
   flutter_test:

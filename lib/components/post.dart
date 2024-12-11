@@ -1,11 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart';
 import 'package:positeams_programmierung2/components/post_service.dart';
 
 /// Main widget for displaying a post with user info, post content, image preview, and interaction buttons.
-/// StatefulWidget is appropriate here as dynamic state management is needed.
-class Post extends StatelessWidget {
+/// StatefulWidget is appropriate here for dynamic state management.
+class Post extends StatefulWidget {
   final String postId;
   final String firstName;
   final String teamId;
@@ -26,6 +25,21 @@ class Post extends StatelessWidget {
   });
 
   @override
+  State<Post> createState() => _PostState();
+}
+
+class _PostState extends State<Post> {
+  String? activeReactionType; // Tracks the currently active reaction type
+
+  /// Handles the state when a reaction is toggled.
+  void _onReactionToggled(String reactionType) {
+    setState(() {
+      // If the same reaction is toggled, deactivate it
+      activeReactionType = (activeReactionType == reactionType) ? null : reactionType;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0), // Reduced vertical padding
@@ -38,13 +52,12 @@ class Post extends StatelessWidget {
             children: [
               // User avatar (dynamic profile image or default avatar)
               CircleAvatar(
-                backgroundImage: profileImage.isNotEmpty
-                    ? NetworkImage(profileImage)  // Load dynamic profile image
+                backgroundImage: widget.profileImage.isNotEmpty
+                    ? NetworkImage(widget.profileImage)  // Load dynamic profile image
                     : const AssetImage('lib/assets/default_avatar.png') as ImageProvider,  // Fallback to default image
                 radius: 28,
               ),
               const SizedBox(width: 10), // Space between avatar and text
-
               // Column for user name, team, and post text
               Expanded(
                 child: Column(
@@ -55,7 +68,7 @@ class Post extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: '$firstName ',  // Dynamically showing the user's name
+                            text: '${widget.firstName} ', // Dynamically showing the user's name
                             style: const TextStyle(
                               fontFamily: 'Futura',
                               fontWeight: FontWeight.bold,
@@ -64,7 +77,7 @@ class Post extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: '- Team $teamId ($departmentId)',  // Dynamically showing the user's team and department
+                            text: '- Team ${widget.teamId} (${widget.departmentId})',  // Dynamically showing the user's team and department
                             style: const TextStyle(
                               color: Colors.grey,
                               fontFamily: 'Futura',
@@ -74,10 +87,9 @@ class Post extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4), // Space between name/team and post text
-
                     // Post text content
                     Text(
-                      contentText,  // Dynamically showing the post text content
+                      widget.contentText,  // Dynamically showing the post text content
                       style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Futura',
@@ -87,17 +99,17 @@ class Post extends StatelessWidget {
                     const SizedBox(height: 16), // Space before image
 
                     // Check if contentImage is not empty
-                    if (contentImage.isNotEmpty)
+                    if (widget.contentImage.isNotEmpty)
                       GestureDetector(
                         onTap: () {
-                          _showFullImage(context, contentImage);
+                          _showFullImage(context, widget.contentImage);
                         },
                         child: AspectRatio(
                           aspectRatio: 21 / 9, // Image aspect ratio
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5.0),
                             child: Image.network(
-                              contentImage, // Dynamically showing the post image
+                              widget.contentImage, // Dynamically showing the post image
                               fit: BoxFit.cover,  // Ensures the image fits within the box
                               errorBuilder: (context, error, stackTrace) {
                                 return const Text('Image failed to load'); // Handle loading error
@@ -110,27 +122,33 @@ class Post extends StatelessWidget {
 
                     // Row of interaction buttons (Like, Love, Applause, Chat)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Space between buttons
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         InteractionButton(
                           icon: Icons.thumb_up_alt_outlined,
                           label: 'Gefällt mir!',
-                          postId: postId, // Pass the postId dynamically
+                          postId: widget.postId, // Pass the postId dynamically
                           reactionType: 'ThumbUp',
+                          isActive: activeReactionType == 'ThumbUp',
+                          onToggled: _onReactionToggled,
                         ),
                         InteractionButton(
                           icon: Icons.favorite_border,
                           label: 'Liebe',
-                          postId: postId, // Pass the postId dynamically
+                          postId: widget.postId,
                           reactionType: 'Favorite',
+                          isActive: activeReactionType == 'Favorite',
+                          onToggled: _onReactionToggled,
                         ),
                         InteractionButton(
                           icon: Icons.emoji_emotions_outlined,
                           label: 'Applaus',
-                          postId: postId, // Pass the postId dynamically
+                          postId: widget.postId,
                           reactionType: 'Emotion',
+                          isActive: activeReactionType == 'Emotion',
+                          onToggled: _onReactionToggled,
                         ),
-                        const ChatButton(),  // Custom chat button with placeholder functionality - Mockup
+                        const ChatButton(),  // Custom chat button with placeholder functionality
                       ],
                     ),
                   ],
@@ -158,17 +176,17 @@ class Post extends StatelessWidget {
       builder: (BuildContext context) {
         return GestureDetector(
           onTap: () {
-            Navigator.of(context).pop(); // close dialog anywhere
+            Navigator.of(context).pop();
           },
           child: Dialog(
             backgroundColor: Colors.transparent,
             insetPadding: const EdgeInsets.all(10),
             child: Center(
               child: Image.network(
-                imageUrl,  // Dynamically showing the full-size image
-                fit: BoxFit.contain,  // Ensures the image scales to fit the screen
+                imageUrl,
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Text('Image failed to load'); // Handle loading error
+                  return const Text('Image failed to load');
                 },
               ),
             ),
@@ -186,12 +204,16 @@ class InteractionButton extends StatefulWidget {
   final String label;
   final String postId; // Post ID for which the interaction is being made
   final String reactionType; // Type of reaction: "ThumbUp", "Favorite", or "Emotion"
+  final bool isActive; // Determines if this button is active
+  final void Function(String reactionType) onToggled; // Callback for toggling reaction
 
   const InteractionButton({
     required this.icon,
     required this.label,
     required this.postId,
     required this.reactionType,
+    required this.isActive,
+    required this.onToggled,
     super.key,
   });
 
@@ -200,73 +222,6 @@ class InteractionButton extends StatefulWidget {
 }
 
 class _InteractionButtonState extends State<InteractionButton> {
-  bool isActive = false; // Track if the button is active
-  String userId = FirebaseAuth.instance.currentUser?.uid ?? ''; // Current authenticated user ID
-
-  @override
-  void initState() {
-    super.initState();
-    _checkReactionStatus(); // Check if the current user has reacted
-  }
-
-  /// Checks if the user has already reacted to the post.
-  /// Sets the button to active if their ID is found in the reaction list.
-  Future<void> _checkReactionStatus() async {
-    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
-
-    final postSnapshot = await postRef.get();
-    if (postSnapshot.exists) {
-      final reactionIds = List<String>.from(postSnapshot.data()?[widget.reactionType + "Id"] ?? []);
-      setState(() {
-        isActive = reactionIds.contains(userId); // Activate button if user has already reacted
-      });
-    }
-  }
-
-  /// Toggles the reaction by calling the appropriate service methods.
-  Future<void> _toggleReaction() async {
-    final postService = PostService();
-
-    try {
-      if (isActive) {
-        // Remove the reaction if the button is active
-        await postService.removeReaction(postId: widget.postId);
-      } else {
-        // Add the reaction if the button is not active
-        await postService.saveReaction(
-          postId: widget.postId,
-          reactionType: widget.reactionType,
-        );
-
-        // Deactivate other reactions by resetting their active state
-        await _deactivateOtherReactions();
-      }
-
-      // Update the UI state
-      setState(() {
-        isActive = !isActive;
-      });
-    } catch (e) {
-      debugPrint('Error toggling reaction: $e');
-    }
-  }
-
-  /// Deactivates all other reaction types for this post.
-  Future<void> _deactivateOtherReactions() async {
-    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
-
-    // Determine other reaction types
-    const reactionTypes = ['ThumbUp', 'Favorite', 'Emotion'];
-    final otherReactions = reactionTypes.where((type) => type != widget.reactionType).toList();
-
-    for (final reactionType in otherReactions) {
-      await postRef.update({
-        reactionType + "Id": FieldValue.arrayRemove([userId]),
-        reactionType + "Counter": FieldValue.increment(-1),
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -274,13 +229,24 @@ class _InteractionButtonState extends State<InteractionButton> {
         IconButton(
           icon: Icon(
             widget.icon,
-            color: isActive ? const Color.fromARGB(255, 7, 110, 23) : Colors.grey, // Change color if active
+            color: widget.isActive ? const Color.fromARGB(255, 7, 110, 23) : Colors.grey,
           ),
-          onPressed: _toggleReaction, // Toggle reaction on press
+          onPressed: () async {
+            // Toggle reaction and notify parent widget
+            widget.onToggled(widget.reactionType);
+            if (widget.isActive) {
+              await PostService().removeReaction(postId: widget.postId);
+            } else {
+              await PostService().saveReaction(
+                postId: widget.postId,
+                reactionType: widget.reactionType,
+              );
+            }
+          },
         ),
-        const SizedBox(height: 2), // Space between icon and label
+        const SizedBox(height: 2),
         Text(
-          widget.label, // Display interaction label
+          widget.label,
           style: const TextStyle(
             color: Colors.grey,
             fontFamily: 'Futura Condensed',
@@ -293,24 +259,22 @@ class _InteractionButtonState extends State<InteractionButton> {
 }
 
 /// Custom button for initiating a chat.
-/// The design hints at integration with a chat platform (e.g., Microsoft Teams).
-/// Since no dynamic state is required, this can remain a StatelessWidget.
 class ChatButton extends StatelessWidget {
-  const ChatButton({super.key}); // Const constructor to resolve error
+  const ChatButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: () {},  // Placeholder for chat functionality
+          onPressed: () {},
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 7, 110, 23),
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.zero,
             ),
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),  // Padding inside the button
-            minimumSize: const Size(80, 25),  // Button size
+            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+            minimumSize: const Size(80, 25),
           ),
           child: const Text(
             "Let's chat!",
@@ -322,9 +286,9 @@ class ChatButton extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 2),  // Space between button and label
+        const SizedBox(height: 2),
         const Text(
-          'Talk in Teams',  // Mockup: Button indicating integration with a chat platform
+          'Talk in Teams',
           style: TextStyle(
             color: Colors.grey,
             fontFamily: 'Futura Condensed',
