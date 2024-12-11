@@ -55,6 +55,9 @@ class PostListWidget extends StatelessWidget {
               contentText: post['contentText'] ?? 'No content',
               contentImage: post['contentImage'] ?? '',
               profileImage: post['profileImage'] ?? '',
+              thumbUpCount: post['ThumbUpCounter'] ?? 0, // Dynamically load ThumbUpCounter
+              favoriteCount: post['FavoriteCounter'] ?? 0, // Dynamically load FavoriteCounter
+              emotionCount: post['EmotionCounter'] ?? 0, // Dynamically load EmotionCounter
             );
           },
         );

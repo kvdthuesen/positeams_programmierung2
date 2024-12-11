@@ -1,5 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart';
 import 'package:positeams_programmierung2/components/post_service.dart';
 
 /// Main widget for displaying a post with user info, post content, image preview, and interaction buttons.
@@ -12,6 +13,9 @@ class Post extends StatefulWidget {
   final String contentText;
   final String contentImage;
   final String profileImage;
+  final int thumbUpCount; // New: Counter for "ThumbUp" reactions
+  final int favoriteCount; // New: Counter for "Favorite" reactions
+  final int emotionCount; // New: Counter for "Emotion" reactions
 
   const Post({
     super.key,
@@ -22,6 +26,9 @@ class Post extends StatefulWidget {
     required this.contentText,
     required this.contentImage,
     required this.profileImage,
+    required this.thumbUpCount, // Pass thumbUpCount dynamically
+    required this.favoriteCount, // Pass favoriteCount dynamically
+    required this.emotionCount, // Pass emotionCount dynamically
   });
 
   @override
@@ -37,6 +44,38 @@ class _PostState extends State<Post> {
       // If the same reaction is toggled, deactivate it
       activeReactionType = (activeReactionType == reactionType) ? null : reactionType;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeReactionStatus(); // Set the initial reaction status
+  }
+
+  /// Initialize the reaction status based on the user's previous interaction.
+  Future<void> _initializeReactionStatus() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+
+    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+    final postSnapshot = await postRef.get();
+
+    if (postSnapshot.exists) {
+      final data = postSnapshot.data() as Map<String, dynamic>;
+      if ((data['ThumbUpId'] ?? []).contains(userId)) {
+        setState(() {
+          activeReactionType = 'ThumbUp';
+        });
+      } else if ((data['FavoriteId'] ?? []).contains(userId)) {
+        setState(() {
+          activeReactionType = 'Favorite';
+        });
+      } else if ((data['EmotionId'] ?? []).contains(userId)) {
+        setState(() {
+          activeReactionType = 'Emotion';
+        });
+      }
+    }
   }
 
   @override
@@ -127,8 +166,9 @@ class _PostState extends State<Post> {
                         InteractionButton(
                           icon: Icons.thumb_up_alt_outlined,
                           label: 'Gefällt mir!',
-                          postId: widget.postId, // Pass the postId dynamically
+                          postId: widget.postId,
                           reactionType: 'ThumbUp',
+                          count: widget.thumbUpCount, // Replace this with actual ThumbUpCounter from your backend
                           isActive: activeReactionType == 'ThumbUp',
                           onToggled: _onReactionToggled,
                         ),
@@ -137,6 +177,7 @@ class _PostState extends State<Post> {
                           label: 'Liebe',
                           postId: widget.postId,
                           reactionType: 'Favorite',
+                          count: widget.favoriteCount, // Replace this with actual FavoriteCounter from your backend
                           isActive: activeReactionType == 'Favorite',
                           onToggled: _onReactionToggled,
                         ),
@@ -145,10 +186,11 @@ class _PostState extends State<Post> {
                           label: 'Applaus',
                           postId: widget.postId,
                           reactionType: 'Emotion',
+                          count: widget.emotionCount, // Replace this with actual EmotionCounter from your backend
                           isActive: activeReactionType == 'Emotion',
                           onToggled: _onReactionToggled,
                         ),
-                        const ChatButton(),  // Custom chat button with placeholder functionality
+                        const ChatButton(),
                       ],
                     ),
                   ],
@@ -199,11 +241,12 @@ class _PostState extends State<Post> {
 
 /// Widget for displaying interaction buttons ( "Like", "Love", "Applause").
 /// The button updates Firebase when clicked and reflects the user's current reaction status.
-class InteractionButton extends StatefulWidget {
+class InteractionButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  final String postId; // Post ID for which the interaction is being made
-  final String reactionType; // Type of reaction: "ThumbUp", "Favorite", or "Emotion"
+  final String postId;
+  final String reactionType;
+  final int count; // Counter for the reaction
   final bool isActive; // Determines if this button is active
   final void Function(String reactionType) onToggled; // Callback for toggling reaction
 
@@ -212,41 +255,61 @@ class InteractionButton extends StatefulWidget {
     required this.label,
     required this.postId,
     required this.reactionType,
+    required this.count,
     required this.isActive,
     required this.onToggled,
     super.key,
   });
 
   @override
-  State<InteractionButton> createState() => _InteractionButtonState();
-}
-
-class _InteractionButtonState extends State<InteractionButton> {
-  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        IconButton(
-          icon: Icon(
-            widget.icon,
-            color: widget.isActive ? const Color.fromARGB(255, 7, 110, 23) : Colors.grey,
-          ),
-          onPressed: () async {
-            // Toggle reaction and notify parent widget
-            widget.onToggled(widget.reactionType);
-            if (widget.isActive) {
-              await PostService().removeReaction(postId: widget.postId);
-            } else {
-              await PostService().saveReaction(
-                postId: widget.postId,
-                reactionType: widget.reactionType,
-              );
-            }
-          },
+        Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            IconButton(
+              icon: Icon(
+                isActive
+                    ? _getFilledIcon(icon) // Filled icon when active
+                    : icon, // Outlined icon when inactive
+                color: isActive ? const Color.fromARGB(255, 7, 110, 23) : Colors.grey,
+              ),
+              onPressed: () async {
+                // Toggle reaction and notify parent widget
+                onToggled(reactionType);
+                if (isActive) {
+                  await PostService().removeReaction(postId: postId);
+                } else {
+                  await PostService().saveReaction(
+                    postId: postId,
+                    reactionType: reactionType,
+                  );
+                }
+              },
+            ),
+            if (count > 0)
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Badge(
+                  label: Text(
+                    '$count',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  backgroundColor: Color.fromARGB(255, 7, 110, 23), // Customize badge color
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 2),
         Text(
-          widget.label,
+          label,
           style: const TextStyle(
             color: Colors.grey,
             fontFamily: 'Futura Condensed',
@@ -256,6 +319,17 @@ class _InteractionButtonState extends State<InteractionButton> {
       ],
     );
   }
+}
+
+IconData _getFilledIcon(IconData icon) {
+  if (icon == Icons.thumb_up_alt_outlined) {
+    return Icons.thumb_up; // Filled version for "Like"
+  } else if (icon == Icons.favorite_border) {
+    return Icons.favorite; // Filled version for "Love"
+  } else if (icon == Icons.emoji_emotions_outlined) {
+    return Icons.emoji_emotions; // Filled version for "Applause"
+  }
+  return icon; // Fallback to the original icon
 }
 
 /// Custom button for initiating a chat.
