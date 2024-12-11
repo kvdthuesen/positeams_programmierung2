@@ -63,8 +63,11 @@ class _MyProfileState extends State<MyProfile> {
     // Check which button is selected and return the corresponding stream
     if (_selectedButton == 'Beiträge') {
       return PostService().getUserPostsStream(context); // Fetch posts by current userId
+    } else if (_selectedButton == 'Reaktionen') {
+      return PostService().getUserReactionStream(context); // Fetch posts the user reacted to
     } else {
-      return PostService().getAllPostsStream(context); // Fetch all posts
+      // Handle unexpected values of _selectedButton
+      throw Exception('Ungültige Auswahl im Profil: $_selectedButton');
     }
   }
 

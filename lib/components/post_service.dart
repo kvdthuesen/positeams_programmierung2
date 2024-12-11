@@ -51,6 +51,8 @@ class PostService {
       query = query.orderBy('createdAt', descending: true); // Sort by most recent posts
     } else if (selectedSortOption == 'Älteste') {
       query = query.orderBy('createdAt', descending: false); // Sort by oldest posts
+    } else if (selectedSortOption == 'Beliebteste') {
+      query = query.orderBy('ReactionCounter', descending: true); // Sort by most reactions
     }
 
     // Stream the query results and handle any errors during execution
@@ -81,19 +83,26 @@ class PostService {
     }
   }
 
-  /// Fetch all posts stream without filtering by userId, used for loading all posts.
-  Stream<QuerySnapshot> getAllPostsStream(BuildContext context) async* {
+  /// Fetch posts stream where the authenticated user has reacted.
+  Stream<QuerySnapshot> getUserReactionStream(BuildContext context) async* {
     // Check if the user is authenticated
     await checkAuthentication(context);
 
-    // Query all posts
-    Query query = _firestore.collection('posts');
+    // Retrieve the current authenticated user
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return; // Exit if no user is logged in
 
-    // Return a stream of all posts
+    // Query posts where the authenticated user's ID is in the ReactionId array
+    Query query = _firestore
+        .collection('posts')
+        .where('ReactionId', arrayContains: user.uid)
+        .orderBy('createdAt', descending: true); // Sort by most recent posts
+
+    // Return a stream of posts the user has reacted to
     try {
-      yield* query.snapshots(); // Return a real-time stream of all posts
+      yield* query.snapshots();
     } catch (e) {
-      throw Exception('Error executing Firestore query: $e'); // Handle Firestore query errors
+      throw Exception('Error fetching user reactions: $e');
     }
   }
 

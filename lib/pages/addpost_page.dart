@@ -184,6 +184,18 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
           'visibility': _selectedShareOption, // Save visibility option
           'searchableContent': searchableContent, // Save the searchable content array
           'randomFactor': Random().nextInt(100000), // Add random factor between 0 and 100,000
+
+          // Initialize reaction counters
+          'ThumbUpCounter': 0,
+          'FavoriteCounter': 0,
+          'EmotionCounter': 0,
+          'ReactionCounter': 0,
+
+          // Initialize reaction ID arrays
+          'ThumbUpId': [],
+          'FavoriteId': [],
+          'EmotionId': [],
+          'ReactionId': [],
         });
 
         if (!mounted) return; // Ensures the context is still valid before using it
