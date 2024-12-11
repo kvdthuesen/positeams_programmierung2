@@ -182,7 +182,7 @@ class _PostState extends State<Post> {
                           onToggled: _onReactionToggled,
                         ),
                         InteractionButton(
-                          icon: Icons.emoji_emotions_outlined,
+                          icon: Icons.handshake_outlined,
                           label: 'Applaus',
                           postId: widget.postId,
                           reactionType: 'Emotion',
@@ -302,7 +302,7 @@ class InteractionButton extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  backgroundColor: Color.fromARGB(255, 7, 110, 23), // Customize badge color
+                  backgroundColor: const Color.fromARGB(255, 7, 110, 23), // Customize badge color
                 ),
               ),
           ],
@@ -326,8 +326,8 @@ IconData _getFilledIcon(IconData icon) {
     return Icons.thumb_up; // Filled version for "Like"
   } else if (icon == Icons.favorite_border) {
     return Icons.favorite; // Filled version for "Love"
-  } else if (icon == Icons.emoji_emotions_outlined) {
-    return Icons.emoji_emotions; // Filled version for "Applause"
+  } else if (icon == Icons.handshake_outlined) {
+    return Icons.handshake_rounded; // Filled version for "Applause"
   }
   return icon; // Fallback to the original icon
 }

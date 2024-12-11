@@ -168,7 +168,7 @@ class PostService {
       });
 
       // Update the counters
-      await IdCounter(postId);
+      await idCounter(postId);
     } catch (e) {
       throw Exception('Error saving reaction: $e');
     }
@@ -223,7 +223,7 @@ class PostService {
       });
 
       // Call IdCounter to update counters after removing reactions
-      await IdCounter(postId);
+      await idCounter(postId);
     } catch (e) {
       throw Exception('Error removing reaction: $e');
     }
@@ -233,7 +233,7 @@ class PostService {
   /// This method recalculates the length of each reaction array and updates
   /// the respective counter fields in Firestore.
   /// [postId] - The ID of the post document in Firestore.
-  Future<void> IdCounter(String postId) async {
+  Future<void> idCounter(String postId) async {
     final postRef = _firestore.collection('posts').doc(postId);
 
     try {
