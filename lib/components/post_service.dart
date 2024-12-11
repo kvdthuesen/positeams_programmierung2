@@ -96,4 +96,163 @@ class PostService {
       throw Exception('Error executing Firestore query: $e'); // Handle Firestore query errors
     }
   }
+
+  /// Saves a reaction to the specified post in Firestore.
+  ///
+  /// This method adds the user's ID to the appropriate reaction array
+  /// and ensures that other reactions are removed.
+  ///
+  /// [postId] - The ID of the post document in Firestore.
+  /// [reactionType] - The type of reaction: 'ThumbUp', 'Favorite', or 'Emotion'.
+  Future<void> saveReaction({
+    required String postId,
+    required String reactionType, // 'ThumbUp', 'Favorite', or 'Emotion'
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('User is not authenticated');
+    }
+
+    final userId = user.uid;
+    final postRef = _firestore.collection('posts').doc(postId);
+
+    try {
+      // Remove existing reactions
+      await removeReaction(postId: postId);
+
+      // Add the new reaction
+      await _firestore.runTransaction((transaction) async {
+        final postSnapshot = await transaction.get(postRef);
+
+        if (!postSnapshot.exists) {
+          throw Exception('Post does not exist');
+        }
+
+        final data = postSnapshot.data() as Map<String, dynamic>;
+
+        // Ensure all arrays are initialized
+        final List<String> reactionIds = List<String>.from(data['ReactionId'] ?? []);
+        final List<String> thumbUpIds = List<String>.from(data['ThumbUpId'] ?? []);
+        final List<String> favoriteIds = List<String>.from(data['FavoriteId'] ?? []);
+        final List<String> emotionIds = List<String>.from(data['EmotionId'] ?? []);
+
+        // Add the user's ID to the specified reaction array
+        if (reactionType == 'ThumbUp') {
+          thumbUpIds.add(userId);
+          reactionIds.add(userId);
+        } else if (reactionType == 'Favorite') {
+          favoriteIds.add(userId);
+          reactionIds.add(userId);
+        } else if (reactionType == 'Emotion') {
+          emotionIds.add(userId);
+          reactionIds.add(userId);
+        }
+
+        // Update Firestore with the modified arrays
+        transaction.update(postRef, {
+          'ReactionId': reactionIds,
+          'ThumbUpId': thumbUpIds,
+          'FavoriteId': favoriteIds,
+          'EmotionId': emotionIds,
+        });
+      });
+
+      // Update the counters
+      await IdCounter(postId);
+    } catch (e) {
+      throw Exception('Error saving reaction: $e');
+    }
+  }
+
+
+  /// Removes a reaction from the specified post in Firestore.
+  /// This method removes the user's ID from the associated arrays
+  /// without handling the counter logic directly.
+  /// [postId] - The ID of the post document in Firestore.
+  Future<void> removeReaction({
+    required String postId,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('User is not authenticated');
+    }
+
+    final userId = user.uid; // Authenticated user's ID
+    final postRef = _firestore.collection('posts').doc(postId);
+
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final postSnapshot = await transaction.get(postRef);
+
+        if (!postSnapshot.exists) {
+          throw Exception('Post does not exist');
+        }
+
+        final data = postSnapshot.data() as Map<String, dynamic>;
+
+        // Retrieve reaction arrays or set empty arrays if null
+        final List<String> reactionIds = List<String>.from(data['ReactionId'] ?? []);
+        final List<String> thumbUpIds = List<String>.from(data['ThumbUpId'] ?? []);
+        final List<String> favoriteIds = List<String>.from(data['FavoriteId'] ?? []);
+        final List<String> emotionIds = List<String>.from(data['EmotionId'] ?? []);
+
+        // Remove the user ID only if it exists in the respective arrays
+        reactionIds.remove(userId);
+        thumbUpIds.remove(userId);
+        favoriteIds.remove(userId);
+        emotionIds.remove(userId);
+
+        // Update the document with the modified arrays
+        transaction.update(postRef, {
+          'ReactionId': reactionIds,
+          'ThumbUpId': thumbUpIds,
+          'FavoriteId': favoriteIds,
+          'EmotionId': emotionIds,
+        });
+      });
+
+      // Call IdCounter to update counters after removing reactions
+      await IdCounter(postId);
+    } catch (e) {
+      throw Exception('Error removing reaction: $e');
+    }
+  }
+
+  /// Updates all reaction counters for the specified post.
+  /// This method recalculates the length of each reaction array and updates
+  /// the respective counter fields in Firestore.
+  /// [postId] - The ID of the post document in Firestore.
+  Future<void> IdCounter(String postId) async {
+    final postRef = _firestore.collection('posts').doc(postId);
+
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final postSnapshot = await transaction.get(postRef);
+
+        if (!postSnapshot.exists) {
+          throw Exception('Post does not exist');
+        }
+
+        final data = postSnapshot.data() as Map<String, dynamic>;
+
+        // Retrieve reaction arrays or set empty arrays if null
+        final List<String> reactionIds = List<String>.from(data['ReactionId'] ?? []);
+        final List<String> thumbUpIds = List<String>.from(data['ThumbUpId'] ?? []);
+        final List<String> favoriteIds = List<String>.from(data['FavoriteId'] ?? []);
+        final List<String> emotionIds = List<String>.from(data['EmotionId'] ?? []);
+
+        // Update counters based on the array lengths
+        transaction.update(postRef, {
+          'ReactionCounter': reactionIds.length,
+          'ThumbUpCounter': thumbUpIds.length,
+          'FavoriteCounter': favoriteIds.length,
+          'EmotionCounter': emotionIds.length,
+        });
+      });
+    } catch (e) {
+      throw Exception('Error updating counters: $e');
+    }
+  }
 }

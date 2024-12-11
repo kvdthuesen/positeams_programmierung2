@@ -123,8 +123,10 @@ class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index].data() as Map<String, dynamic>;
+              final postId = posts[index].id; // Firestore document ID
 
               return Post(
+                postId: postId, // Pass the postId dynamically
                 firstName: post['firstName'] ?? 'Unknown', // Dynamically display user's first name
                 teamId: post['teamId'] ?? 'Unknown Team', // Dynamically display team
                 departmentId: post['departmentId'] ?? 'Unknown Department', // Dynamically display department

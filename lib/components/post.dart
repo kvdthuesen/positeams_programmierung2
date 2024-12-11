@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:positeams_programmierung2/components/post_service.dart';
 
 /// Main widget for displaying a post with user info, post content, image preview, and interaction buttons.
-/// StatelessWidget is appropriate here as no dynamic state management is needed.
+/// StatefulWidget is appropriate here as dynamic state management is needed.
 class Post extends StatelessWidget {
+  final String postId;
   final String firstName;
   final String teamId;
   final String departmentId;
@@ -12,6 +16,7 @@ class Post extends StatelessWidget {
 
   const Post({
     super.key,
+    required this.postId,
     required this.firstName,
     required this.teamId,
     required this.departmentId,
@@ -104,13 +109,28 @@ class Post extends StatelessWidget {
                     const SizedBox(height: 5), // Space after image
 
                     // Row of interaction buttons (Like, Love, Applause, Chat)
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Space between buttons
                       children: [
-                        InteractionButton(icon: Icons.thumb_up_alt_outlined, label: 'Gefällt mir!'),
-                        InteractionButton(icon: Icons.favorite_border, label: 'Liebe'),
-                        InteractionButton(icon: Icons.emoji_emotions_outlined, label: 'Applaus'),
-                        ChatButton(),  // Custom chat button with placeholder functionality - Mockup
+                        InteractionButton(
+                          icon: Icons.thumb_up_alt_outlined,
+                          label: 'Gefällt mir!',
+                          postId: postId, // Pass the postId dynamically
+                          reactionType: 'ThumbUp',
+                        ),
+                        InteractionButton(
+                          icon: Icons.favorite_border,
+                          label: 'Liebe',
+                          postId: postId, // Pass the postId dynamically
+                          reactionType: 'Favorite',
+                        ),
+                        InteractionButton(
+                          icon: Icons.emoji_emotions_outlined,
+                          label: 'Applaus',
+                          postId: postId, // Pass the postId dynamically
+                          reactionType: 'Emotion',
+                        ),
+                        const ChatButton(),  // Custom chat button with placeholder functionality - Mockup
                       ],
                     ),
                   ],
@@ -129,6 +149,7 @@ class Post extends StatelessWidget {
       ),
     );
   }
+
 
   /// Displays the full-size image in a dialog when tapped
   void _showFullImage(BuildContext context, String imageUrl) {
@@ -159,24 +180,107 @@ class Post extends StatelessWidget {
 }
 
 /// Widget for displaying interaction buttons ( "Like", "Love", "Applause").
-/// StatelessWidget is suitable here as the button doesn't need dynamic state management.
-class InteractionButton extends StatelessWidget {
+/// The button updates Firebase when clicked and reflects the user's current reaction status.
+class InteractionButton extends StatefulWidget {
   final IconData icon;
   final String label;
+  final String postId; // Post ID for which the interaction is being made
+  final String reactionType; // Type of reaction: "ThumbUp", "Favorite", or "Emotion"
 
-  const InteractionButton({required this.icon, required this.label, super.key});
+  const InteractionButton({
+    required this.icon,
+    required this.label,
+    required this.postId,
+    required this.reactionType,
+    super.key,
+  });
+
+  @override
+  State<InteractionButton> createState() => _InteractionButtonState();
+}
+
+class _InteractionButtonState extends State<InteractionButton> {
+  bool isActive = false; // Track if the button is active
+  String userId = FirebaseAuth.instance.currentUser?.uid ?? ''; // Current authenticated user ID
+
+  @override
+  void initState() {
+    super.initState();
+    _checkReactionStatus(); // Check if the current user has reacted
+  }
+
+  /// Checks if the user has already reacted to the post.
+  /// Sets the button to active if their ID is found in the reaction list.
+  Future<void> _checkReactionStatus() async {
+    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+
+    final postSnapshot = await postRef.get();
+    if (postSnapshot.exists) {
+      final reactionIds = List<String>.from(postSnapshot.data()?[widget.reactionType + "Id"] ?? []);
+      setState(() {
+        isActive = reactionIds.contains(userId); // Activate button if user has already reacted
+      });
+    }
+  }
+
+  /// Toggles the reaction by calling the appropriate service methods.
+  Future<void> _toggleReaction() async {
+    final postService = PostService();
+
+    try {
+      if (isActive) {
+        // Remove the reaction if the button is active
+        await postService.removeReaction(postId: widget.postId);
+      } else {
+        // Add the reaction if the button is not active
+        await postService.saveReaction(
+          postId: widget.postId,
+          reactionType: widget.reactionType,
+        );
+
+        // Deactivate other reactions by resetting their active state
+        await _deactivateOtherReactions();
+      }
+
+      // Update the UI state
+      setState(() {
+        isActive = !isActive;
+      });
+    } catch (e) {
+      debugPrint('Error toggling reaction: $e');
+    }
+  }
+
+  /// Deactivates all other reaction types for this post.
+  Future<void> _deactivateOtherReactions() async {
+    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+
+    // Determine other reaction types
+    const reactionTypes = ['ThumbUp', 'Favorite', 'Emotion'];
+    final otherReactions = reactionTypes.where((type) => type != widget.reactionType).toList();
+
+    for (final reactionType in otherReactions) {
+      await postRef.update({
+        reactionType + "Id": FieldValue.arrayRemove([userId]),
+        reactionType + "Counter": FieldValue.increment(-1),
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         IconButton(
-          icon: Icon(icon),  // Interaction icon
-          onPressed: () {},  // Placeholder for functionality
+          icon: Icon(
+            widget.icon,
+            color: isActive ? const Color.fromARGB(255, 7, 110, 23) : Colors.grey, // Change color if active
+          ),
+          onPressed: _toggleReaction, // Toggle reaction on press
         ),
-        const SizedBox(height: 2),  // Space between icon and label
+        const SizedBox(height: 2), // Space between icon and label
         Text(
-          label,  // Interaction label
+          widget.label, // Display interaction label
           style: const TextStyle(
             color: Colors.grey,
             fontFamily: 'Futura Condensed',

@@ -45,8 +45,10 @@ class PostListWidget extends StatelessWidget {
           itemCount: posts.length,
           itemBuilder: (context, index) {
             final post = posts[index].data() as Map<String, dynamic>; // Cast post data
+            final postId = posts[index].id; // Get Firestore document ID
 
             return Post(
+              postId: postId, // Pass the document ID dynamically
               firstName: post['firstName'] ?? 'Unknown',
               teamId: post['teamId'] ?? 'Unknown Team',
               departmentId: post['departmentId'] ?? 'Unknown Department',

@@ -216,7 +216,10 @@ class _MyProfileState extends State<MyProfile> {
                     return Column(
                       children: posts.map((doc) {
                         final post = doc.data() as Map<String, dynamic>;
+                        final postId = doc.id; // Extract the Firestore document ID
+
                         return Post(
+                          postId: postId, // Pass the postId dynamically
                           firstName: post['firstName'] ?? 'Unknown',
                           teamId: post['teamId'] ?? 'Unknown Team',
                           departmentId: post['departmentId'] ?? 'Unknown Department',
