@@ -98,6 +98,8 @@ class _AddPostState extends State<AddPost> with AutomaticKeepAliveClientMixin {
       leading: IconButton(
         icon: const Icon(Icons.close, size: 30), // Close button
         onPressed: () {
+          // Minimize the keyboard
+          FocusScope.of(context).unfocus();
           // Navigate back to the previous index in the main screen
           MainScreenState? mainScreenState = context.findAncestorStateOfType<MainScreenState>();
           if (mainScreenState != null && widget.previousIndex != mainScreenState.currentIndex) {

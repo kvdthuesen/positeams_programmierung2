@@ -97,7 +97,8 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 // Function that triggers when the user presses enter in the search field or clicks the search icon
   void _onSearch() {
     String searchQuery = _searchController.text.trim(); // Get search query from the input field
-
+    // Minimize the keyboard
+    FocusScope.of(context).unfocus();
     if (searchQuery.isNotEmpty) {
       // Save the search query to Firebase
       _saveSearch(searchQuery);

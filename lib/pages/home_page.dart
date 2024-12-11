@@ -120,7 +120,10 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
     required void Function(String) onSelected,
   }) {
     return PopupMenuButton<String>(
-      onSelected: onSelected,
+      onSelected: (value) {
+        FocusScope.of(context).unfocus(); // Minimize the keyboard
+        onSelected(value);
+      },
       itemBuilder: (BuildContext context) {
         return options.map((option) {
           return PopupMenuItem<String>(
