@@ -159,7 +159,7 @@ class _PostState extends State<Post> {
                       ),
                     const SizedBox(height: 5), // Space after image
 
-                    // Row of interaction buttons (Like, Love, Applause, Chat)
+                    // Row of interaction buttons (Like, Love, Glückwunsch, Chat)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -183,7 +183,7 @@ class _PostState extends State<Post> {
                         ),
                         InteractionButton(
                           icon: Icons.handshake_outlined,
-                          label: 'Applaus',
+                          label: 'Glückwunsch',
                           postId: widget.postId,
                           reactionType: 'Emotion',
                           count: widget.emotionCount, // Replace this with actual EmotionCounter from your backend
@@ -239,7 +239,7 @@ class _PostState extends State<Post> {
   }
 }
 
-/// Widget for displaying interaction buttons ( "Like", "Love", "Applause").
+/// Widget for displaying interaction buttons ( "Like", "Love", "Glückwunsch").
 /// The button updates Firebase when clicked and reflects the user's current reaction status.
 class InteractionButton extends StatelessWidget {
   final IconData icon;
@@ -327,7 +327,7 @@ IconData _getFilledIcon(IconData icon) {
   } else if (icon == Icons.favorite_border) {
     return Icons.favorite; // Filled version for "Love"
   } else if (icon == Icons.handshake_outlined) {
-    return Icons.handshake_rounded; // Filled version for "Applause"
+    return Icons.handshake_rounded; // Filled version for "Glückwunsch"
   }
   return icon; // Fallback to the original icon
 }
