@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:positeams_programmierung2/pages/main_screen.dart';
 import 'package:positeams_programmierung2/pages/authentication_page.dart';
-import 'package:positeams_programmierung2/components/editProfile_page.dart'; // Import für die neue Profilseite
 import 'package:positeams_programmierung2/components/appbar.dart';
 
 // Defines custom colors
@@ -64,10 +63,6 @@ class _MenuPageState extends State<MenuPage> with AutomaticKeepAliveClientMixin 
               ListTile(
                 title: Text('Passwort oder Namen ändern', style: _contentStyle), // Text for the list item - account settings
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const EditProfilePage()),
-                  ); // Navigate to EditProfilePage
                 },
               ),
               ListTile(

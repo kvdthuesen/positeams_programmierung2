@@ -213,7 +213,7 @@ class _MyProfileState extends State<MyProfile> {
                     final posts = snapshot.data?.docs ?? [];
 
                     if (posts.isEmpty) {
-                      return const Center(child: Text('No posts available.'));
+                      return const Center(child: Text('Keine Beiträge verfügbar.'));
                     }
 
                     return Column(
